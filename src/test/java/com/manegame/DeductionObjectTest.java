@@ -7,6 +7,7 @@ package com.manegame;
 
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -16,7 +17,7 @@ import static org.junit.Assert.*;
  *
  * @author Sam
  */
-public class DeductionObjectTest {
+public class DeductionObjectTest extends GraphicTest {
     
     public DeductionObjectTest() {
     }
@@ -59,6 +60,7 @@ public class DeductionObjectTest {
     public void testPlayerSpeedDecreaseAmount() {
         System.out.println("playerSpeedDecreaseAmount");
         int DEDUCTIONOBJECT = 0;
+        Player player = null;
         DeductionObject instance = new DeductionObject();
         double expResult = 0.0;
         double result = instance.playerSpeedDecreaseAmount(DEDUCTIONOBJECT);
@@ -89,6 +91,7 @@ public class DeductionObjectTest {
     public void testHitDeductionObject() {
         System.out.println("hitDeductionObject");
         int DEDUCTIONOBJECT = 0;
+        Player player = null;
         DeductionObject instance = new DeductionObject();
         int expResult = 0;
         int result = instance.hitDeductionObject(DEDUCTIONOBJECT);
@@ -96,7 +99,17 @@ public class DeductionObjectTest {
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
-
+    
+    /**
+     * Test that a player's score is not reduced below zero.
+     */
+    @Test
+    public void testPlayerScoreAboveZero() {
+        System.out.println("playerScoreGreaterThanZero");
+        Player player = null;
+        Assert.assertTrue("Player's score is below zero.", player.playerScore >= 0);
+    }
+    
     /**
      * Test of deductionObjectStartDirection method, of class DeductionObject.
      */

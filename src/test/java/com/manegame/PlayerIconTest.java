@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  *
  * @author Sam
  */
-public class PlayerIconTest {
+public class PlayerIconTest extends GraphicTest {
     
     public PlayerIconTest() {
     }

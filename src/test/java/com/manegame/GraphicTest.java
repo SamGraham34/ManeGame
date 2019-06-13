@@ -5,6 +5,7 @@
  */
 package com.manegame;
 
+import junit.framework.Assert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -102,4 +103,56 @@ public class GraphicTest {
         fail("The test case is a prototype.");
     }
     
+    /**
+     * Test graphic location too high to be seen by player.
+     */
+    @Test
+    public void testGraphicAboveBoard() {
+        System.out.println("tooHigh");
+        Graphic g = null;
+        Graphic instance = new Graphic();
+        Assert.assertTrue("Graphic is above player's view", g.positionYaxis >= 0);
+        // TODO review the generated test code and remove the default call to fail.
+    }
+    
+     /**
+     * Test graphic location too low to be seen by player.
+     */
+    @Test
+    public void testGraphicBelowBoard() {
+        System.out.println("tooLow");
+        Graphic g = null;
+        Level level = null;
+        Graphic instance = new Graphic();
+        Assert.assertTrue("Graphic is below player's view", g.positionYaxis <= level.boardHeight);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+    
+     /**
+     * Test graphic location too far left to be seen by player.
+     */
+    @Test
+    public void testGraphicLeftOfBoard() {
+        System.out.println("tooFarLeft");
+        Graphic g = null;
+        Graphic instance = new Graphic();
+        Assert.assertTrue("Graphic is left of player's view", g.positionXaxis >= 0);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+    
+     /**
+     * Test graphic location too far right to be seen by player.
+     */
+    @Test
+    public void testGraphicRightOfBoard() {
+        System.out.println("tooFarRight");
+        Graphic g = null;
+        Level level = null;
+        Graphic instance = new Graphic();
+        Assert.assertTrue("Graphic is right of player's view", g.positionXaxis <= level.boardWidth);
+        // TODO review the generated test code and remove the default call to fail.
+    }
+        
 }

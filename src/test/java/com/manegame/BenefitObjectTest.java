@@ -16,7 +16,7 @@ import static org.junit.Assert.*;
  *
  * @author Sam
  */
-public class BenefitObjectTest {
+public class BenefitObjectTest extends GraphicTest {
     
     public BenefitObjectTest() {
     }

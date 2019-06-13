@@ -30,7 +30,7 @@ public class Level {
     
     /** Opens a player’s board.  Level status, name, and score populate from arg.  Creates a log begin 
        event.
-       @Args Player*/
+       @param p (Player) */
     public void loadLevel(Player p) {
          //   ManeDB.dbLogBeginEvent(p);
             new LevelGUI().setVisible(true);
@@ -38,7 +38,8 @@ public class Level {
        
     }
     
-    /** Keeps deduction objects in motion. */
+    /** Keeps deduction objects in motion. 
+     @param g (Graphic) */
     public void objectMove(Graphic g) { 
         /*
         switch (MovementDirection) {
@@ -54,24 +55,27 @@ public class Level {
         
     }
 
-    /** Keeps player icon in motion. */
+    /** Keeps player icon in motion. 
+        @param g Graphic */
     public void playerIconMove(Graphic g) { 
 	// playerDirectionChange(ch direction) 
     }
 
     /** Player score increases when a benefit object is struck.  The amount is determined by which object it 
-       was.  The benefit object is then removed from the board.  numOfBenefitObjects reduced by 1. */
+       was.  The benefit object is then removed from the board.  numOfBenefitObjects reduced by 1. 
+       @param p Player */
     public void scoreIncrease(Player p) {//hitBenefitObject(BENEFITOBJECT)) {
-    p.playerScore += 0;//argument;
-    //BenefitObject.removeBenefitObject(BenefitObjectID[]);
-    //numOfBenefitObjects -= 1;
-    if (keepPlaying(numOfBenefitObjects) == false) {
-        endLevel(p);} 
+        p.playerScore += 0;//argument;
+        //BenefitObject.removeBenefitObject(BenefitObjectID[]);
+        //numOfBenefitObjects -= 1;
+        if (keepPlaying(numOfBenefitObjects) == false) {
+            endLevel(p);} 
     }
 
     /** Player score decreases, and speed slows when a deduction object is struck.  
      * The object determines the amount to decrease and how long the player is slowed.  
-     * The deduction object is then out of play for 5 seconds. */
+     * The deduction object is then out of play for 5 seconds. 
+     @param p Player */
     public void scoreDecrease(Player p){ //hitDeductionObject(DEDUCTIONOBJECT)) {
         p.playerScore -= 0;//argument;
 	//DeductionObject.hideDeductionObject(DEDUCTIONOBJECT);
@@ -79,7 +83,9 @@ public class Level {
 	//lblTimer.Visible = true;
     }
     
-    /** Checks the board to see if all benefit objects have been collected */
+    /** Checks the board to see if all benefit objects have been collected 
+        @param numOfBenefitObjects int 
+        @return boolean */
     public boolean keepPlaying(int numOfBenefitObjects) {
 	boolean gameOn = true;
 	if (numOfBenefitObjects == 0) 
@@ -87,14 +93,12 @@ public class Level {
 	return gameOn;}
     
     /** Player defeats a level by collecting all benefit objects on the board.  
-     * This triggers a save current status event.  The next level loads for the player. */
+     * This triggers a save current status event.  The next level loads for the player. 
+     @param p Player 
+     */
     public void endLevel(Player p)  {
 	p.playerLevel +=1;
         //ManeDB.dbSaveCurrentStatus(p);
 	//Level.loadLevel(p);
-    }
-
-
-
-    
+    } 
 }
