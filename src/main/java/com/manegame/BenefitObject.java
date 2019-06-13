@@ -13,7 +13,10 @@ public class BenefitObject extends Graphic {
     
         public enum BENEFITOBJECT {HAIRCUT, FOIL, BLOW_DRY};
         
-        /** Displays a benefit object image based on the object reference*/
+        /** Displays a benefit object image based on the object reference
+        @param BENEFITOBJECT
+        @return String
+        */
         public String benefitObjectImage(int BENEFITOBJECT) { 
         
         String benefitImage = "";
@@ -29,7 +32,11 @@ public class BenefitObject extends Graphic {
         */
         return benefitImage;
     }
-    
+        /** Determines how much player's score increases based on object that 
+         * was struck.
+        @param BENEFITOBJECT
+        @return int
+        */
     public int hitBenefitObject(int BENEFITOBJECT) {
         int benefitAmount = 0;
         /*
@@ -45,7 +52,9 @@ public class BenefitObject extends Graphic {
         return benefitAmount; 
     }
     
-    /** A benefit object that has been collected is taken out of play */
+    /** A benefit object that has been collected is taken out of play 
+     @param BENEFITOBJECT
+     */
     public void removeBenefitObject(int BENEFITOBJECT) {
         //remove BENEFITOBJECT;
     }

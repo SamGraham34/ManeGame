@@ -12,7 +12,9 @@ package com.manegame;
 public class PlayerIcon extends Graphic {
     
     /** This method allows the player to interact with the player icon.  Directional arrows will 
-        control the player’s movements. */
+        control the player’s movements. 
+        @param char
+        */
     public void playerDirectionChange(char direction) {
         // code to change player direction.
         //ch[] directionArrows = [72, 75, 77, 80]; )
