@@ -14,7 +14,7 @@ import net.proteanit.sql.DbUtils;
 import java.sql.ResultSet;
 
 /**
- *
+ *  This class houses methods to interact with the game's database.
  * @author Sam
  */
 public class ManeDB {

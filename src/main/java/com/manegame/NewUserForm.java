@@ -17,7 +17,8 @@ import org.junit.Assert;
  */
 
 /**
- *
+ *  This class executes the initial user interface.  User's can choose to 
+ *  login or to register as a new player.
  * @author Sam
  */
 public class NewUserForm extends javax.swing.JFrame {

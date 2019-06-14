@@ -6,7 +6,8 @@
 package com.manegame;
 
 /**
- *
+ * This class extends Graphic to control the interaction of deduction objects
+ * on the user's board.
  * @author Sam
  */
 public class DeductionObject extends Graphic {

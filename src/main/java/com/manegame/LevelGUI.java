@@ -6,7 +6,7 @@
 package com.manegame;
 
 /**
- *
+ *  This class opens a new JFrame as the game interface for the user.
  * @author Sam
  */
 public class LevelGUI extends javax.swing.JFrame {

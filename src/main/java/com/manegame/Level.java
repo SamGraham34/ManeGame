@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 /**
- *
+ *  This class holds methods that are used by Level GUI to control Graphics and
+ *  other interactions of the user.
  * @author Sam
  */
 public class Level {

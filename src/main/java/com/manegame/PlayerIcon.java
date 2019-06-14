@@ -6,7 +6,7 @@
 package com.manegame;
 
 /**
- *
+ *  This class controls the user's icon Graphic on the player's board.
  * @author Sam
  */
 public class PlayerIcon extends Graphic {

@@ -6,7 +6,7 @@
 package com.manegame;
 
 /**
- *
+ * 
  * @author Sam
  */
 public class BenefitObject extends Graphic {

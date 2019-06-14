@@ -6,7 +6,8 @@
 package com.manegame;
 
 /**
- *
+ *  This class executes when the player selects login from the New User Form.
+ *  Returning players must submit valid information for a successful login.
  * @author Sam
  */
 public class LoginForm extends javax.swing.JFrame {

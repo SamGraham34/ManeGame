@@ -6,7 +6,7 @@
 package com.manegame;
 
 /**
- *
+ *  This is the base class for all animations on the user board.
  * @author Sam
  */
 public class Graphic {

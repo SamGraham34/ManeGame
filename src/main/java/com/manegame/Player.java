@@ -6,7 +6,9 @@
 package com.manegame;
 
 /**
- *
+ *  This class constructs new player objects.  It has methods for creating new 
+ *  players or for building a return player using information stored in the 
+ *  database.
  * @author Sam
  */
 public class Player {
