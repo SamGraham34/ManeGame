@@ -6,11 +6,15 @@
 package com.manegame;
 
 /**
- * 
+ * This class holds methods to control actions of objects that benefit the 
+ * player.
  * @author Sam
  */
 public class BenefitObject extends Graphic {
-    
+        
+        /**
+         * Enum of available Benefit objects.
+         */
         public enum BENEFITOBJECT {HAIRCUT, FOIL, BLOW_DRY};
         
         /** Displays a benefit object image based on the object reference

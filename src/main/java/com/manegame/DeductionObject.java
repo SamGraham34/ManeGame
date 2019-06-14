@@ -12,6 +12,9 @@ package com.manegame;
  */
 public class DeductionObject extends Graphic {
     
+    /**
+     * Enum of Deduction objects.
+     */
     public enum DEDUCTIONOBJECT {LANDLORD, TAX_COLLECTOR, STATE_INSPECTOR};
 
      /** Displays a deduction object image based on the object reference
