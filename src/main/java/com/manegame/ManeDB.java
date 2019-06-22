@@ -132,7 +132,7 @@ public class ManeDB {
             Statement stmt = connection.createStatement();
             String createTable = String.format("CREATE TABLE Player_%d_Log_Table", playerNum);
             String sql = String.format(createTable +
-                        "(PlayerNum INT PRIMARY KEY     NOT NULL," +
+                        "(PlayerNum INT    NOT NULL," +
                         " LastLogin           STRING    NOT NULL, " + 
                         " FailedLoginAttempts           STRING    NOT NULL, " + 
                         " LastGamePlayTime      STRING    NOT NULL, " + 
