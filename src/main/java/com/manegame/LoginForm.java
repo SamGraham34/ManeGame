@@ -5,12 +5,19 @@
  */
 package com.manegame;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *  This class executes when the player selects login from the New User Form.
  *  Returning players must submit valid information for a successful login.
  * @author Sam
  */
 public class LoginForm extends javax.swing.JFrame {
+    
+    String email;
+    String password;
 
     /**
      * Creates new form LoginForm
@@ -52,6 +59,11 @@ public class LoginForm extends javax.swing.JFrame {
 
         btnUserLogin.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         btnUserLogin.setText("Login");
+        btnUserLogin.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUserLoginActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -97,6 +109,20 @@ public class LoginForm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnUserLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserLoginActionPerformed
+        email = txtLoginEmail.getText();
+        password = txtLoginPassword.getText();
+        
+        try {
+            Player p = ManeDB.dbGetPlayerData(email);
+            new LevelGUI(p).setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_btnUserLoginActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

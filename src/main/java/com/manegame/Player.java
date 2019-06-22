@@ -12,9 +12,9 @@ package com.manegame;
  * @author Sam
  */
 public class Player {
-    int playerIdentification = 0;
+    //int playerIdentification = 1;
     
-    int playerID = newPlayerID();
+    int playerID;
     String playerName;
     String playerEmail;
     String playerPassword;
@@ -22,8 +22,9 @@ public class Player {
     long playerScore;
     
     int newPlayerID(){
-        ++playerIdentification;
-        playerID = playerIdentification;
+        
+        playerID = ManeDB.dbGetPlayerCount();
+        ++playerID;
         
         return playerID;
     }

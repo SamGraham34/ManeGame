@@ -31,13 +31,15 @@ public class Level {
     
     /** Opens a player’s board.  Level status, name, and score populate from arg.  Creates a log begin 
        event.
-       @param p (Player) */
-    public void loadLevel(Player p) {
+        */
+    /*
+    public void loadLevel(int playerNum) {
          //   ManeDB.dbLogBeginEvent(p);
             new LevelGUI().setVisible(true);
-
-       
     }
+    */
+      
+    
     
     /** Keeps deduction objects in motion. 
      @param g (Graphic) */

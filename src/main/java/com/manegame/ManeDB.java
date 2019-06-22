@@ -12,15 +12,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.proteanit.sql.DbUtils;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 
 /**
  *  This class houses methods to interact with the game's database.
  * @author Sam
  */
 public class ManeDB {
-    
-    
-    
+     
      /**
      *
      * @return @throws java.lang.ClassNotFoundException
@@ -43,10 +42,30 @@ public class ManeDB {
      * Reads data from the database.  Once user provides successful login information
      * this method returns the player's data.
      */
-        public static void dbGetPlayerData() {
+        public static Player dbGetPlayerData(String email) throws ClassNotFoundException, SQLException {
         //throw new UnsupportedOperationException("Not supported yet."); 
         //To change body of generated methods, choose Tools | Templates.
-        /*
+                  
+            Connection connection = dbConnect();
+            Statement stmt = connection.createStatement();
+            ResultSet playerInfo = stmt.executeQuery("SELECT * FROM "
+                    + "All_Players_Table WHERE Player_Email = " + "\"" + email + "\"");
+            
+            int playerNum = playerInfo.getInt("Player_ID");
+            String name = playerInfo.getString("Player_Name");
+            String dbEmail = playerInfo.getString("Player_Email");
+            String password = playerInfo.getString("Player_Password");
+            int level = playerInfo.getInt("Player_Level");
+            long score = playerInfo.getLong("Player_Score");
+            
+            Player p = new Player(playerNum, name, dbEmail, password, level, score);
+            connection.close();
+            return p;
+        }
+
+                
+                
+                /*
         try {          
             Connection connection = dbConnect();
                 String query;
@@ -69,7 +88,7 @@ public class ManeDB {
             Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
         }
         */
-    }
+    
    
    /**
     * Writes data to the database. This method writes player data to the database.
@@ -79,12 +98,12 @@ public class ManeDB {
        Connection connection = dbConnect();
               
         try {          
-            String query = "Insert into All_Players_Table (Player_ID,Player_Name,"
+            String query = "INSERT INTO All_Players_Table (Player_ID,Player_Name,"
                     + "Player_Email,Player_Password,Player_Level,Player_Score) "
-                    + "values (?,?,?,?,?)" ;
+                    + "VALUES (?,?,?,?,?,?)" ;
     
             try (PreparedStatement pst = connection.prepareStatement(query)) {
-                //pst.setInt(1, (p.playerID + 1)); 
+                pst.setInt(1, (p.playerID)); 
                 pst.setString(2, p.playerName);
                 pst.setString(3, p.playerEmail); 
                 pst.setString(4, p.playerPassword);
@@ -95,8 +114,9 @@ public class ManeDB {
                 JOptionPane.showMessageDialog(null,"Player Added!");
                 pst.close();
                 
-                dbGetPlayerData();
-            }
+                //dbGetPlayerData();
+                connection.close();
+            }            
         }
         catch (SQLException e)
         {
@@ -105,7 +125,7 @@ public class ManeDB {
     }
     
     public static void dbCreatePlayerLogTable(int playerNum) throws SQLException{
-        /*      
+              
         try {
             
             Connection connection = dbConnect();
@@ -118,12 +138,14 @@ public class ManeDB {
                         " LastGamePlayTime      STRING    NOT NULL, " + 
                         " TotalGamePlayTime              STRING    NOT NULL)"); 
             stmt.executeUpdate(sql);         
-        
+            /*
             String sqlInsertLog = "INSERT INTO " + createTable + " (Player_ID,"
                     + "Last_Login,Failed_Login_Attempts,Last_Game_Start_Time,Total_Game_Time) " +
                         "VALUES (?,?,?,?,?);"; 
             stmt.executeUpdate(sqlInsertLog);
+            */
             stmt.close();
+            JOptionPane.showMessageDialog(null,"Player Log Created!");
             connection.close();
             
 
@@ -132,8 +154,28 @@ public class ManeDB {
          System.err.println( e.getClass().getName() + ": " + e.getMessage() );
          System.exit(0);
       }    
-            */
+            
    }
+    
+    public static int dbGetPlayerCount(){
+        int numOfRowsInAllPlayerTable = 0;
+        try{
+            Connection connection = dbConnect();
+            Statement stmt = connection.createStatement();
+            ResultSet count = stmt.executeQuery("SELECT COUNT(*)AS numOfPlayers FROM All_Players_Table");
+            count.next();
+            numOfRowsInAllPlayerTable = count.getInt("numOfPlayers");
+            count.close();
+            connection.close();
+        }
+              
+        catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+        }    
+        
+        return numOfRowsInAllPlayerTable;
+    }
     
     /** Saves a player’s status.  Saves score and level to All Players Table  and creates an end log event. */
     public static void dbSaveCurrentStatus(Player p, long score, int Level) throws ClassNotFoundException {
@@ -175,8 +217,34 @@ public class ManeDB {
     }
     
     /** Updates the player’s log table LastLogin field with Date/Time.Now */
-    public static void dbLogBeginEvent(Player p) throws ClassNotFoundException {
-        dbConnect();
+    public static void dbLogBeginEvent(int playerNum) throws ClassNotFoundException {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        try {
+                
+            Connection connection = dbConnect();
+            String logTableNameAsString = String.format("Player_%d_Log_Table", playerNum);
+            String query = "INSERT INTO " + logTableNameAsString + " (PlayerNum,LastLogin,"
+                    + "FailedLoginAttempts,LastGamePlayTime,TotalGamePlayTime)"       
+                    + "VALUES (?,?,?,?,?)" ;
+            
+            try (PreparedStatement pst = connection.prepareStatement(query)) {
+                pst.setInt(1, (playerNum)); 
+                pst.setString(2, dateFormatter.format(date));
+                pst.setString(3, "TBD"); 
+                pst.setString(4, "TBD");
+                pst.setString(5, "TBD");
+                              
+                pst.execute();
+                pst.close();
+            }
+            connection.close();                
+        }               
+        catch ( Exception e ) {
+         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
+         System.exit(0);
+      }    
+        
         //code to begin a log event    
     } 
     

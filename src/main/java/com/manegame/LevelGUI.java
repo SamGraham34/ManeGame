@@ -5,6 +5,10 @@
  */
 package com.manegame;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *  This class opens a new JFrame as the game interface for the user.
  * @author Sam
@@ -13,9 +17,21 @@ public class LevelGUI extends javax.swing.JFrame {
 
     /**
      * Creates new form LevelGUI
+     * @param p
      */
-    public LevelGUI() {
+    public LevelGUI(Player p) {
         initComponents();
+        lblPlayerName.setText(p.playerName);
+        lblLevel.setText(Integer.toString(p.playerLevel));
+        lblScore.setText(Long.toString(p.playerScore));
+        try {
+            ManeDB.dbLogBeginEvent(p.playerID);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Failed to connect to "
+                    + "database your game is not being logged.");
+        }
+        
     }
 
     /**
@@ -135,7 +151,7 @@ public class LevelGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * @param args the command line arguments
+     * @param p the command line arguments
      */
     public static void main(Player p) {
         /* Set the Nimbus look and feel */
@@ -164,7 +180,7 @@ public class LevelGUI extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new LevelGUI().setVisible(true);
+                new LevelGUI(p).setVisible(true);
             }
         });
     }

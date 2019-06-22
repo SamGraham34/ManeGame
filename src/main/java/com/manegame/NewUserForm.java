@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+import javax.swing.JOptionPane;
 import org.apache.maven.shared.utils.StringUtils;
 import org.junit.Assert;
 
@@ -184,32 +185,38 @@ public class NewUserForm extends javax.swing.JFrame {
                    
             name = txtName.getText();
             email = txtEmail.getText();
+            
          // Verify password fields match
         if (txtPassword.getText().equals(txtVerifyPassword.getText())) {
             password = txtPassword.getText();
-        }
-        else {
             
-        }
-        
-        // if all input validated create a new player level intialized to 1.
-        // score initialized to zero.
-        if (validInputName(name) == true && validInputEmail(email) == true && validInputPassword(password) == true) {   
+            //check that all input is valid
+            if (validInputName(name) == true && validInputEmail(email) == true && validInputPassword(password) == true) {   
             Player p = new Player(name, email, password);
         
-           try {
-                ManeDB.dbSaveNewPlayer(p);
-                ManeDB.dbCreatePlayerLogTable(p.playerID);
-                Level.loadLevel(p);
-            } 
-            catch (ClassNotFoundException ex) {
-                Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
-            }   
-            catch (SQLException ex) {
+                try {
+                    ManeDB.dbSaveNewPlayer(p);
+                    ManeDB.dbCreatePlayerLogTable(p.playerID);
+                    //Level.loadLevel(p.playerID);
+                    new LevelGUI(p).setVisible(true);
+                } 
+                catch (ClassNotFoundException ex) {
                     Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } 
+                }   
+                catch (SQLException ex) {
+                    Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } 
+        }
+        else {
+            JOptionPane.showMessageDialog(null,"Passwords must match");
+            txtPassword.hasFocus();
+            txtVerifyPassword.setText("");
+            
+            
+        }
     }//GEN-LAST:event_btnRegisterActionPerformed
+    
     /**
      * Verify valid user input name for the New User Form.  
      * @param String name
