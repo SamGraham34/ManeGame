@@ -5,33 +5,56 @@
  */
 package com.manegame;
 
+import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 /**
  *  This class opens a new JFrame as the game interface for the user.
  * @author Sam
  */
 public class LevelGUI extends javax.swing.JFrame {
+   
+    private Timer timer;
+    DeductionObject taxCollector;
+    DeductionObject stateInspector;
+    DeductionObject landLord;
+    List<JLabel> deductObjects = new ArrayList<>();
+    //JLabel landLord0;
 
     /**
      * Creates new form LevelGUI
      * @param p
      */
     public LevelGUI(Player p) {
+        addDeductIcons();
         initComponents();
         lblPlayerName.setText(p.playerName);
         lblLevel.setText(Integer.toString(p.playerLevel));
         lblScore.setText(Long.toString(p.playerScore));
+        
+        
+        
+        
+                    
         try {
             ManeDB.dbLogBeginEvent(p.playerID);
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null,"Failed to connect to "
                     + "database your game is not being logged.");
-        }
-        
+        }    
     }
 
     /**
@@ -53,38 +76,82 @@ public class LevelGUI extends javax.swing.JFrame {
         lblBarrier1 = new javax.swing.JLabel();
         lblBarrier2 = new javax.swing.JLabel();
         lblBarrier3 = new javax.swing.JLabel();
+        testingMove = new javax.swing.JLabel();
+        btnStart = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(500, 500));
+        setPreferredSize(new java.awt.Dimension(600, 600));
+        setResizable(false);
+        setSize(new java.awt.Dimension(600, 600));
+        addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                formMouseEntered(evt);
+            }
+        });
+        getContentPane().setLayout(null);
 
         lblPlayerName.setText("Player's Name");
+        getContentPane().add(lblPlayerName);
+        lblPlayerName.setBounds(0, 0, 66, 13);
 
         lblTitleScore.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblTitleScore.setText("Score:");
+        getContentPane().add(lblTitleScore);
+        lblTitleScore.setBounds(72, 0, 53, 13);
 
         lblScore.setText("88888888888");
+        getContentPane().add(lblScore);
+        lblScore.setBounds(131, 0, 53, 13);
 
         lblTitleLevel.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblTitleLevel.setText("Level:");
+        getContentPane().add(lblTitleLevel);
+        lblTitleLevel.setBounds(190, 0, 53, 13);
 
         lblLevel.setText("XXX");
+        getContentPane().add(lblLevel);
+        lblLevel.setBounds(249, 0, 31, 13);
 
         lblTimer.setText("Timer");
+        getContentPane().add(lblTimer);
+        lblTimer.setBounds(443, 0, 59, 13);
 
         lblBarrier.setBackground(new java.awt.Color(0, 0, 0));
         lblBarrier.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
+        getContentPane().add(lblBarrier);
+        lblBarrier.setBounds(443, 690, 59, 86);
 
         lblBarrier1.setBackground(new java.awt.Color(0, 0, 0));
         lblBarrier1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
+        getContentPane().add(lblBarrier1);
+        lblBarrier1.setBounds(400, 795, 102, 73);
 
         lblBarrier2.setBackground(new java.awt.Color(0, 0, 0));
         lblBarrier2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
+        getContentPane().add(lblBarrier2);
+        lblBarrier2.setBounds(400, 19, 102, 71);
 
         lblBarrier3.setBackground(new java.awt.Color(0, 0, 0));
         lblBarrier3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
+        getContentPane().add(lblBarrier3);
+        lblBarrier3.setBounds(0, 108, 66, 86);
+
+        testingMove.setIcon(new javax.swing.ImageIcon("D:\\Sam\\Pictures\\Mane Game\\TAX_COLLECTOR.jpg")); // NOI18N
+        testingMove.setText("jLabel1");
+        getContentPane().add(testingMove);
+        testingMove.setBounds(334, 286, 154, 137);
+
+        btnStart.setText("Start");
+        btnStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartActionPerformed(evt);
+            }
+        });
+        getContentPane().add(btnStart);
+        btnStart.setBounds(21, 394, 69, 21);
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -94,61 +161,35 @@ public class LevelGUI extends javax.swing.JFrame {
 
         setJMenuBar(jMenuBar1);
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(lblBarrier2, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblBarrier1, javax.swing.GroupLayout.PREFERRED_SIZE, 102, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(144, 144, 144))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(lblPlayerName, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(lblBarrier3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTitleScore, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblScore, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblTitleLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 53, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblLevel, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 51, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblTimer, javax.swing.GroupLayout.PREFERRED_SIZE, 59, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap())
-                    .addComponent(lblBarrier, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPlayerName)
-                    .addComponent(lblTitleScore)
-                    .addComponent(lblScore)
-                    .addComponent(lblTitleLevel)
-                    .addComponent(lblLevel)
-                    .addComponent(lblTimer))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(lblBarrier, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(19, 19, 19)
-                        .addComponent(lblBarrier1, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(lblBarrier2, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(lblBarrier3, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(84, Short.MAX_VALUE))))
-        );
-
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void formMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseEntered
+
+    }//GEN-LAST:event_formMouseEntered
+
+    private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
+                //timer.start();
+            
+               // JLabel d = deductObjects.get(0);
+            timer = new Timer(1, new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+               for (JLabel d : deductObjects){ 
+                //JLabel d = deductObjects.get(0);
+                deductObjectMove(d);
+
+               } 
+            }                           
+        });
+            timer.start();
+               // for (JLabel j: deductObjects) {
+               //     deductObjectMove(j);
+               // }
+               //deductObjectMove(deductObjects.get(0));
+    }//GEN-LAST:event_btnStartActionPerformed
 
     /**
      * @param p the command line arguments
@@ -184,8 +225,107 @@ public class LevelGUI extends javax.swing.JFrame {
             }
         });
     }
+    
+    public final void addDeductIcons(){
+       
+        landLord = new DeductionObject();        
+        JLabel landLord0 = landLord.deductionObjectImage(0);
+        deductObjects.add(landLord0);
+        add(landLord0, BorderLayout.CENTER);
+        landLord0.setVisible(true);      
+        
+        taxCollector = new DeductionObject();
+        JLabel taxCollector1 = taxCollector.deductionObjectImage(1);
+        deductObjects.add(taxCollector1);
+        add(taxCollector1, BorderLayout.CENTER);
+        taxCollector1.setVisible(true);
+        
+        stateInspector = new DeductionObject();
+        JLabel stateInspector2 = stateInspector.deductionObjectImage(2);
+        deductObjects.add(stateInspector2);
+        add(stateInspector2, BorderLayout.CENTER);
+        stateInspector2.setVisible(true);       
+                
+    }
+    
+    public void deductObjectMove(JLabel d){
+        int objectReference = deductObjects.indexOf(d);
+        
+        /*
+        int xAxis = d.getLocation().x;
+        int yAxis = d.getLocation().y;
+
+        timer = new Timer(1, new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                if (d.getLocation().y != LevelGUI.HEIGHT) {
+                DeductionObject.deductionObjectStartDirection(objectReference, xAxis, yAxis);
+                
+                    d.setLocation(d.getLocation().x = xAxis,
+                             d.getLocation().y = yAxis);
+                         
+                //d.getLocation().x = xAxis;
+               // d.getLocation().y = yAxis;
+                } 
+            }                                            
+        });
+
+        */
+                        if (deductObjects.indexOf(d) == 0){
+                        //if (d.getLocation().y >= 0.5) {
+                            Graphic.moveUp(d);
+                        //}
+                       // if (d.getLocation().y < 1 && d.getLocation().x > 50) {
+                       //     Graphic.moveLeft(d);
+                       // } 
+                    }
+                    if (deductObjects.indexOf(d) == 1) {
+                       // if (d.getLocation().y <= 500) {
+                            Graphic.moveDown(d);
+                      //  }
+                    //    if (d.getLocation().x <= 500 && d.getLocation().y > 499) {
+                    //        Graphic.moveRight(d);
+                    //    }
+                    }
+                    if (deductObjects.indexOf(d) == 2) {
+                     //   if (d.getLocation().x <= 500) {
+                            Graphic.moveRight(d);
+                     //   }
+                   //     if (d.getLocation().x > 499 && d.getLocation().y > 0.5) {
+                   //         Graphic.moveUp(d);
+                   //     }
+                    }
+               } 
+        /*
+            timer = new Timer(1, new ActionListener(){
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                
+                    if (d.getLocation().y >= d.HEIGHT) {
+                         d.setLocation(testingMove.getLocation().x,
+                             d.getLocation().y - 1);
+                         //deductObjectMove(deductObjects.get(0));
+
+                    }     
+                    
+                    
+
+            }   
+                
+                               
+        });
+*/
+
+        
+        
+       // deductObjectMove(d);
+    
+    
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnStart;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
@@ -199,5 +339,6 @@ public class LevelGUI extends javax.swing.JFrame {
     private javax.swing.JLabel lblTimer;
     private javax.swing.JLabel lblTitleLevel;
     private javax.swing.JLabel lblTitleScore;
+    private javax.swing.JLabel testingMove;
     // End of variables declaration//GEN-END:variables
 }

@@ -23,7 +23,8 @@ public class BenefitObject extends Graphic {
         */
         public String benefitObjectImage(int BENEFITOBJECT) { 
         
-        String benefitImage = "";
+        String benefitImage = "label.setIcon(new ImageIcon(new ImageIcon(\"icon.png\").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));";
+        
         /*
         switch (BENEFITOBJECT) {
             case 0: benefitImage = ""; //Haircut image;
@@ -34,6 +35,7 @@ public class BenefitObject extends Graphic {
 		break;
         }
         */
+        
         return benefitImage;
     }
         /** Determines how much player's score increases based on object that 

@@ -223,14 +223,19 @@ public class NewUserForm extends javax.swing.JFrame {
      * @return
      */
     public boolean validInputName(String name){
-        boolean inputValid = true;
+        boolean inputValid = false;
         
-       // Assert.assertTrue(Pattern.matches("[a-zA-Z0-9\\s\\-]{1,50}", name));
-        //Assert.assertEquals(0, StringUtils.countMatches(name.replace(" ", ""), "--"));
-        //int maybeValid = 0;        
-       // switch (maybeValid){
-        //case 1:       
-       // }
+        if (Pattern.matches("[a-zA-Z0-9\\s\\-]{1,50}", name)){
+            inputValid = true;
+            StringUtils.countMatches(name.replace(" ", ""), "--");
+        }
+        else {
+            JOptionPane.showMessageDialog(null,"Name can only contain letters, digits, "
+                    + "and hyphens");
+            txtName.setText("");
+            txtName.hasFocus();
+        }
+
         return inputValid;
     }
     

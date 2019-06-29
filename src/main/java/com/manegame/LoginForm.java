@@ -108,6 +108,7 @@ public class LoginForm extends javax.swing.JFrame {
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnUserLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserLoginActionPerformed
@@ -117,6 +118,7 @@ public class LoginForm extends javax.swing.JFrame {
         try {
             Player p = ManeDB.dbGetPlayerData(email);
             new LevelGUI(p).setVisible(true);
+            this.dispose();
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {

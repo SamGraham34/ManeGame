@@ -64,7 +64,7 @@ public class ManeDBTest {
     @Test
     public void testDbGetPlayerData() {
         System.out.println("dbGetPlayerData");
-        ManeDB.dbGetPlayerData();
+        //ManeDB.dbGetPlayerData();
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
@@ -161,7 +161,7 @@ public class ManeDBTest {
         System.out.println("dbLogBeginEvent");
         Player p = null;
         ManeDB instance = new ManeDB();
-        instance.dbLogBeginEvent(p);
+//        instance.dbLogBeginEvent(p);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }

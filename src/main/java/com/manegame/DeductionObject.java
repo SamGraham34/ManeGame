@@ -5,6 +5,13 @@
  */
 package com.manegame;
 
+import java.awt.Image;
+import java.util.HashMap;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+
+
 /**
  * This class extends Graphic to control the interaction of deduction objects
  * on the user's board.
@@ -18,13 +25,25 @@ public class DeductionObject extends Graphic {
     public enum DEDUCTIONOBJECT {LANDLORD, TAX_COLLECTOR, STATE_INSPECTOR};
 
      /** Displays a deduction object image based on the object reference
-      @param DEDUCTIONOBJECT
-      @return String
+      * @param DEDUCTIONOBJECT
+      * @param g
       */
-    public String deductionObjectImage(int DEDUCTIONOBJECT) { 
-        String deductionImage = "";
-        // code to find correct image location
-        return deductionImage;
+    public JLabel deductionObjectImage(int DEDUCTIONOBJECT) {        
+        String path = "";
+        
+        switch (DEDUCTIONOBJECT){
+            case 0:
+                path = "D:\\Sam\\Pictures\\Mane Game\\LANDLORD.jpg";
+                break;
+            case 1:
+                path = "D:\\Sam\\Pictures\\Mane Game\\TAX_COLLECTOR.jpg";
+                break;
+            case 2:
+                path = "D:\\Sam\\Pictures\\Mane Game\\STATE_INSPECTOR.jpg";
+                break;
+        }       
+        
+        return Graphic.getGraphicImage(path);
     }
 
     /** Temporarily decrease the player’s speed by the amount returned.
@@ -40,7 +59,7 @@ public class DeductionObject extends Graphic {
      @param DEDUCTIONOBJECT
      @return double
      */
-    public double playerSpeedDecreaseTime(int DEDUCTIONOBJECT) {
+    public double playerSpeedDecreaseTime(int DEDUCTIONOBJECT, DeductionObject d) {
         double slowedTime = 0.0;
         //returns a value of time to slow the player
         return slowedTime;
@@ -60,13 +79,28 @@ public class DeductionObject extends Graphic {
     /** Each deduction object starts in a different direction; this method determines the direction  
         of each deduction object at the start of the level. 
         @param DEDUCTIONOBJECT
-        @return char
+     * @param d
+        
         */
-    public char deductionObjectStartDirection(int DEDUCTIONOBJECT) { 
-        char startDirection = 72;
-        // code to begin start directions
-        return startDirection;    
-    }
+    /*
+    public static int deductionObjectStartDirection(int DEDUCTIONOBJECT, int x, int y) { 
+        
+        switch (DEDUCTIONOBJECT){
+            case 0:
+                Graphic.moveDown(y);
+                break;
+            case 1:
+                Graphic.moveLeft(x);
+                break;
+            case 2:
+                Graphic.moveRight(x);
+                break;
+        }
+        
+        return y;
+        
+           
+    } */
 
     /** After a player strikes an object, the deduction object is out of play for 5 seconds. 
      @param DEDUCTIONOBJECT
