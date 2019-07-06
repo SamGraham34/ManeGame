@@ -23,7 +23,7 @@ public class Player {
     
     int newPlayerID(){
         
-        playerID = ManeDB.dbGetPlayerCount();
+        playerID = ManeDB.dbGetNumOfRowsInTable("All_Players_Table");
         ++playerID;
         
         return playerID;

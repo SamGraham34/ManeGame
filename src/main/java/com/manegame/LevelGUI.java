@@ -9,6 +9,7 @@ import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,35 +20,87 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
+import java.awt.event.KeyListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.time.Duration;
+import java.time.Instant;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.KeyStroke;
+import org.apache.maven.shared.utils.StringUtils;
 
 /**
  *  This class opens a new JFrame as the game interface for the user.
  * @author Sam
  */
-public class LevelGUI extends javax.swing.JFrame {
+public class LevelGUI extends javax.swing.JFrame implements KeyListener {
    
     private Timer timer;
     DeductionObject taxCollector;
     DeductionObject stateInspector;
     DeductionObject landLord;
-    List<JLabel> deductObjects = new ArrayList<>();
-    //JLabel landLord0;
+    public static List<JLabel> deductObjects = new ArrayList<>();
+    List<JLabel> benefitObjects = new ArrayList<>();
+    public static List<JLabel> barrierObjects = new ArrayList<>();
+    int numOfBarriers = 8;
+    int numOfBenefitObjects = 72;
+    public static int MAX_Y_AXIS = 506;
+    public static int MIN_Y_AXIS = 25;
+    public static int MAX_X_AXIS = 480;
+    public static int MIN_X_AXIS = 50;
+    int MIN_DIST_TO_BENEFIT = 18;
+    int SPACE_BETWEEN_BENEFIT_OBJECTS = 60;
+    public JLabel playerIcon;
+    long playerScore;
+    int playerSpeed = 6;
+    Instant start = Instant.now();
+    Player player;
+    
 
     /**
      * Creates new form LevelGUI
      * @param p
      */
-    public LevelGUI(Player p) {
+    public LevelGUI (Player p){
+        
+        player = p;
+        addPlayerIcon();
         addDeductIcons();
+        addBenefitIcons();
+        //addHorizontalBarrierIcons();
+        addVerticalBarrierIcons();
+        
         initComponents();
         lblPlayerName.setText(p.playerName);
         lblLevel.setText(Integer.toString(p.playerLevel));
-        lblScore.setText(Long.toString(p.playerScore));
-        
-        
-        
-        
-                    
+        playerScore = p.playerScore;
+        lblScore.setText(Long.toString(playerScore)); 
+        //addKeyListener(this);       
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                Instant finish = Instant.now();
+                Duration gameTime = Duration.between(start, finish);
+                long gameInSeconds = gameTime.getSeconds();
+                JOptionPane.showMessageDialog(null,Long.toString(gameInSeconds));
+                long gameInMinutes = gameInSeconds /  60;
+                JOptionPane.showMessageDialog(null,Long.toString(gameInMinutes));
+                long gameInHours = gameInMinutes / 60;
+                // HH:MM:SS
+                String gameTimeString = Long.toString(gameInHours) + ":" 
+                + StringUtils.leftPad(Long.toString(gameInMinutes), 2, "0") + ":" 
+                + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
+                try {
+                     ManeDB.dbLogEndEvent(player, gameTimeString);
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(null,"Failed to log");
+                }
+            }
+        });
+
         try {
             ManeDB.dbLogBeginEvent(p.playerID);
         } catch (ClassNotFoundException ex) {
@@ -72,23 +125,19 @@ public class LevelGUI extends javax.swing.JFrame {
         lblTitleLevel = new javax.swing.JLabel();
         lblLevel = new javax.swing.JLabel();
         lblTimer = new javax.swing.JLabel();
-        lblBarrier = new javax.swing.JLabel();
-        lblBarrier1 = new javax.swing.JLabel();
-        lblBarrier2 = new javax.swing.JLabel();
-        lblBarrier3 = new javax.swing.JLabel();
-        testingMove = new javax.swing.JLabel();
         btnStart = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         jMenu2 = new javax.swing.JMenu();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setPreferredSize(new java.awt.Dimension(600, 600));
+        setBackground(new java.awt.Color(204, 204, 204));
+        setPreferredSize(new java.awt.Dimension(570, 650));
         setResizable(false);
-        setSize(new java.awt.Dimension(600, 600));
-        addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseEntered(java.awt.event.MouseEvent evt) {
-                formMouseEntered(evt);
+        setSize(new java.awt.Dimension(570, 650));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                Close_Event(evt);
             }
         });
         getContentPane().setLayout(null);
@@ -119,39 +168,19 @@ public class LevelGUI extends javax.swing.JFrame {
         getContentPane().add(lblTimer);
         lblTimer.setBounds(443, 0, 59, 13);
 
-        lblBarrier.setBackground(new java.awt.Color(0, 0, 0));
-        lblBarrier.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
-        getContentPane().add(lblBarrier);
-        lblBarrier.setBounds(443, 690, 59, 86);
-
-        lblBarrier1.setBackground(new java.awt.Color(0, 0, 0));
-        lblBarrier1.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
-        getContentPane().add(lblBarrier1);
-        lblBarrier1.setBounds(400, 795, 102, 73);
-
-        lblBarrier2.setBackground(new java.awt.Color(0, 0, 0));
-        lblBarrier2.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
-        getContentPane().add(lblBarrier2);
-        lblBarrier2.setBounds(400, 19, 102, 71);
-
-        lblBarrier3.setBackground(new java.awt.Color(0, 0, 0));
-        lblBarrier3.setBorder(javax.swing.BorderFactory.createMatteBorder(5, 5, 5, 5, new java.awt.Color(0, 0, 0)));
-        getContentPane().add(lblBarrier3);
-        lblBarrier3.setBounds(0, 108, 66, 86);
-
-        testingMove.setIcon(new javax.swing.ImageIcon("D:\\Sam\\Pictures\\Mane Game\\TAX_COLLECTOR.jpg")); // NOI18N
-        testingMove.setText("jLabel1");
-        getContentPane().add(testingMove);
-        testingMove.setBounds(334, 286, 154, 137);
-
         btnStart.setText("Start");
         btnStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnStartActionPerformed(evt);
             }
         });
+        btnStart.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                playerDirectionChange(evt);
+            }
+        });
         getContentPane().add(btnStart);
-        btnStart.setBounds(21, 394, 69, 21);
+        btnStart.setBounds(240, 560, 69, 21);
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -160,41 +189,78 @@ public class LevelGUI extends javax.swing.JFrame {
         jMenuBar1.add(jMenu2);
 
         setJMenuBar(jMenuBar1);
-
-        pack();
-        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void formMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_formMouseEntered
-
-    }//GEN-LAST:event_formMouseEntered
-
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-                //timer.start();
-            
-               // JLabel d = deductObjects.get(0);
-            timer = new Timer(1, new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-               for (JLabel d : deductObjects){ 
-                //JLabel d = deductObjects.get(0);
-                deductObjectMove(d);
+        //this.addKeyListener(direction);
 
-               } 
+        timer = new Timer(1, new ActionListener(){
+            
+            @Override
+            public void actionPerformed(ActionEvent e){
+                
+                playerIcon.hasFocus();
+                
+                for (JLabel d : deductObjects){ 
+                    Graphic.objectMove(d);                
+                } 
+               
+                for (JLabel b : benefitObjects){
+                    int benefitAmount = 0;
+                    if ((playerIcon.getLocation().x > (b.getLocation().x - MIN_DIST_TO_BENEFIT) &&
+                            playerIcon.getLocation().x < (b.getLocation().x + MIN_DIST_TO_BENEFIT)) &&
+                            (playerIcon.getLocation().y > (b.getLocation().y - MIN_DIST_TO_BENEFIT) && 
+                            playerIcon.getLocation().y < (b.getLocation().y + MIN_DIST_TO_BENEFIT)) &&
+                            b.isShowing() == true){
+                        benefitAmount = BenefitObject.hitBenefitObject(benefitObjects.indexOf(b));
+                        playerScore += benefitAmount;
+                        lblScore.setText(Long.toString(playerScore));
+                        b.setVisible(false);
+                        --numOfBenefitObjects;
+                    }
+                }
             }                           
         });
-            timer.start();
-               // for (JLabel j: deductObjects) {
-               //     deductObjectMove(j);
-               // }
-               //deductObjectMove(deductObjects.get(0));
+        timer.start();
     }//GEN-LAST:event_btnStartActionPerformed
+
+    private void playerDirectionChange(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playerDirectionChange
+        if( (evt.getKeyCode() == KeyEvent.VK_DOWN) && (playerIcon.getLocation().y <= MAX_Y_AXIS) ){
+                   playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y + playerSpeed);
+        }   
+        if( (evt.getKeyCode() == KeyEvent.VK_UP) && (playerIcon.getLocation().y >= MIN_Y_AXIS) ){
+                   playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y - playerSpeed);
+        }
+        if( (evt.getKeyCode() == KeyEvent.VK_LEFT) && (playerIcon.getLocation().x >= MIN_X_AXIS) ){
+                   playerIcon.setLocation(playerIcon.getLocation().x - playerSpeed, playerIcon.getLocation().y);
+        }
+        if( (evt.getKeyCode() == KeyEvent.VK_RIGHT) && (playerIcon.getLocation().x <= MAX_X_AXIS) ){
+                   playerIcon.setLocation(playerIcon.getLocation().x + playerSpeed, playerIcon.getLocation().y);
+        }
+    }//GEN-LAST:event_playerDirectionChange
+
+    private void Close_Event(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_Close_Event
+        Instant finish = Instant.now();
+        Duration gameTime = Duration.between(start, finish);
+        long gameInSeconds = gameTime.getSeconds();
+        long gameInMinutes = gameInSeconds /  60;
+        long gameInHours = gameInMinutes / 60;
+        // HH:MM:SS
+        String gameTimeString = Long.toString(gameInHours) + ":" 
+                + StringUtils.leftPad(Long.toString(gameInMinutes % 60), 2, "0") + ":" 
+                + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
+        try {
+            ManeDB.dbLogEndEvent(player, gameTimeString);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+    }//GEN-LAST:event_Close_Event
 
     /**
      * @param p the command line arguments
      */
-    public static void main(Player p) {
+    public static void main (Player p) {
         /* Set the Nimbus look and feel */
         //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
@@ -244,101 +310,156 @@ public class LevelGUI extends javax.swing.JFrame {
         JLabel stateInspector2 = stateInspector.deductionObjectImage(2);
         deductObjects.add(stateInspector2);
         add(stateInspector2, BorderLayout.CENTER);
-        stateInspector2.setVisible(true);       
-                
+        stateInspector2.setVisible(true);                      
+    }
+       
+    /**
+     * Adds the player icon to the board.
+     */
+    public final void addPlayerIcon(){
+         
+        playerIcon = PlayerIcon.playerIconImage();
+        
+        add(playerIcon, BorderLayout.CENTER);
+        playerIcon.setLocation(MIN_X_AXIS, MIN_Y_AXIS);
+        playerIcon.setVisible(true);  
     }
     
-    public void deductObjectMove(JLabel d){
-        int objectReference = deductObjects.indexOf(d);
+    public final void addVerticalBarrierIcons(){
+        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
+        int barrierWidth = 15;
+        int barrierHeight = 100;
+        int j = 0;
+        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         
-        /*
-        int xAxis = d.getLocation().x;
-        int yAxis = d.getLocation().y;
+        for ( int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS; barrierXaxis < MAX_X_AXIS; barrierXaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
+          //  int j = 0;
+            //JLabel barrier = new JLabel();
+            if (barrierXaxis % (SPACE_BETWEEN_BENEFIT_OBJECTS*2) == 0){
+                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation(barrierXaxis + 27, MIN_Y_AXIS);
+                barrierObjects.get(j).setVisible(true);
+                j++;
+                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation(barrierXaxis + 27, MAX_Y_AXIS - barrierHeight);
+                barrierObjects.get(j).setVisible(true);
+                j++;
+            }
+            else {// (barrierXaxis % SPACE_BETWEEN_BENEFIT_OBJECTS == 0){
 
-        timer = new Timer(1, new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                if (d.getLocation().y != LevelGUI.HEIGHT) {
-                DeductionObject.deductionObjectStartDirection(objectReference, xAxis, yAxis);
-                
-                    d.setLocation(d.getLocation().x = xAxis,
-                             d.getLocation().y = yAxis);
-                         
-                //d.getLocation().x = xAxis;
-               // d.getLocation().y = yAxis;
-                } 
-            }                                            
-        });
-
-        */
-                        if (deductObjects.indexOf(d) == 0){
-                        //if (d.getLocation().y >= 0.5) {
-                            Graphic.moveUp(d);
-                        //}
-                       // if (d.getLocation().y < 1 && d.getLocation().x > 50) {
-                       //     Graphic.moveLeft(d);
-                       // } 
-                    }
-                    if (deductObjects.indexOf(d) == 1) {
-                       // if (d.getLocation().y <= 500) {
-                            Graphic.moveDown(d);
-                      //  }
-                    //    if (d.getLocation().x <= 500 && d.getLocation().y > 499) {
-                    //        Graphic.moveRight(d);
-                    //    }
-                    }
-                    if (deductObjects.indexOf(d) == 2) {
-                     //   if (d.getLocation().x <= 500) {
-                            Graphic.moveRight(d);
-                     //   }
-                   //     if (d.getLocation().x > 499 && d.getLocation().y > 0.5) {
-                   //         Graphic.moveUp(d);
-                   //     }
-                    }
-               } 
-        /*
-            timer = new Timer(1, new ActionListener(){
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                
-                
-                    if (d.getLocation().y >= d.HEIGHT) {
-                         d.setLocation(testingMove.getLocation().x,
-                             d.getLocation().y - 1);
-                         //deductObjectMove(deductObjects.get(0));
-
-                    }     
-                    
-                    
-
-            }   
-                
-                               
-        });
-*/
-
+                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation(barrierXaxis + 27, (MAX_Y_AXIS/2) - (barrierHeight/2) + MIN_Y_AXIS);
+                barrierObjects.get(j).setVisible(true);      
+                j++;
+            }
+            
+        }
         
+    }
+        public final void addHorizontalBarrierIcons(){
+        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
+        int barrierWidth = 50;
+        int barrierHeight = 15;
+        int j = 0;
+        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         
-       // deductObjectMove(d);
-    
-    
+        for ( int barrierYaxis = SPACE_BETWEEN_BENEFIT_OBJECTS; barrierYaxis < MAX_Y_AXIS; barrierYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
+          //  int j = 0;
+            //JLabel barrier = new JLabel();
+            if (barrierYaxis % (SPACE_BETWEEN_BENEFIT_OBJECTS*2) == 0){
+                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation(MIN_X_AXIS, barrierYaxis);
+                
+                barrierObjects.get(j).setVisible(true);
+                j++;
+                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation(MAX_X_AXIS - barrierWidth, barrierYaxis);
+                barrierObjects.get(j).setVisible(true);
+                j++;
+            }
+            else {// (barrierXaxis % SPACE_BETWEEN_BENEFIT_OBJECTS == 0){
+
+                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
+              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
+                add(barrierObjects.get(j), BorderLayout.CENTER);
+                barrierObjects.get(j).setLocation((MAX_X_AXIS/2) - (barrierWidth/2) + MIN_X_AXIS, barrierYaxis);
+                barrierObjects.get(j).setVisible(true);      
+                j++;
+            }
+            
+        }
+        
+    }
+ 
+    public final void addBenefitIcons(){
+        int benefitObjectXaxis = MIN_X_AXIS;
+        int benefitObjectYaxis = MIN_Y_AXIS;
+        
+        // Loop through the number of benefit objects
+        // add JLabel for each object.
+        for (int i = 0; i < numOfBenefitObjects; i++) {
+            if (benefitObjectYaxis < MAX_Y_AXIS) {
+                BenefitObject benefitIcon = new BenefitObject();        
+                if (i % 3 == 0){
+                    benefitObjects.add(benefitIcon.benefitObjectImage(1));
+                    }
+                else if (i % 2 == 0){
+                    benefitObjects.add(benefitIcon.benefitObjectImage(2));
+                }
+                else {
+                    benefitObjects.add(benefitIcon.benefitObjectImage(0));
+                }
+                // add the new JLabel to the board.
+                add(benefitObjects.get(i), BorderLayout.CENTER);
+                // set the benefit object location.
+                benefitObjects.get(i).setLocation(benefitObjectXaxis, benefitObjectYaxis);
+                benefitObjects.get(i).setVisible(true);  
+                benefitObjectYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS;
+            }
+            // start a new column of benefit objects.
+            if (benefitObjectYaxis >= MAX_Y_AXIS){
+                benefitObjectXaxis += SPACE_BETWEEN_BENEFIT_OBJECTS;
+                benefitObjectYaxis = MIN_Y_AXIS;
+            }
+        }  
+    }
+        
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnStart;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JLabel lblBarrier;
-    private javax.swing.JLabel lblBarrier1;
-    private javax.swing.JLabel lblBarrier2;
-    private javax.swing.JLabel lblBarrier3;
     private javax.swing.JLabel lblLevel;
     private javax.swing.JLabel lblPlayerName;
     private javax.swing.JLabel lblScore;
     private javax.swing.JLabel lblTimer;
     private javax.swing.JLabel lblTitleLevel;
     private javax.swing.JLabel lblTitleScore;
-    private javax.swing.JLabel testingMove;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyPressed(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 }

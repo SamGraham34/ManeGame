@@ -8,6 +8,7 @@ package com.manegame;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 
 /**
  *  This class holds methods that are used by Level GUI to control Graphics and
@@ -27,64 +28,17 @@ public class Level {
     public int boardHeight = 500;
     public int boardWidth = 500;
     
-    // grid the board? Easier to identify barriers?
-    
-    /** Opens a player’s board.  Level status, name, and score populate from arg.  Creates a log begin 
-       event.
-        */
-    /*
-    public void loadLevel(int playerNum) {
-         //   ManeDB.dbLogBeginEvent(p);
-            new LevelGUI().setVisible(true);
-    }
-    */
       
     
-    
-    /** Keeps deduction objects in motion. 
-     @param g (Graphic) */
-    public void objectMove(Graphic g) { 
-        /*
-        switch (MovementDirection) {
-            case UP:
-                if (g.positionYaxis != 0) {
-                    g.moveUp(g);
-                }
-                else {
-                    g.moveLeft(g);
-                }
-        }
-        */
+    public static JLabel getBarrier() {
+         
+        String path = "D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg";
+        return Graphic.getGraphicImage(path);
+
+        
         
     }
 
-    /** Keeps player icon in motion. 
-        @param g Graphic */
-    public void playerIconMove(Graphic g) { 
-	// playerDirectionChange(ch direction) 
-    }
-
-    /** Player score increases when a benefit object is struck.  The amount is determined by which object it 
-       was.  The benefit object is then removed from the board.  numOfBenefitObjects reduced by 1. 
-       @param p Player */
-    public void scoreIncrease(Player p) {//hitBenefitObject(BENEFITOBJECT)) {
-        p.playerScore += 0;//argument;
-        //BenefitObject.removeBenefitObject(BenefitObjectID[]);
-        //numOfBenefitObjects -= 1;
-        if (keepPlaying(numOfBenefitObjects) == false) {
-            endLevel(p);} 
-    }
-
-    /** Player score decreases, and speed slows when a deduction object is struck.  
-     * The object determines the amount to decrease and how long the player is slowed.  
-     * The deduction object is then out of play for 5 seconds. 
-     @param p Player */
-    public void scoreDecrease(Player p){ //hitDeductionObject(DEDUCTIONOBJECT)) {
-        p.playerScore -= 0;//argument;
-	//DeductionObject.hideDeductionObject(DEDUCTIONOBJECT);
-	//playerSpeed -= DeductionObject.playerSpeedDecreaseAmount(DEDUCTIONOBJECT);
-	//lblTimer.Visible = true;
-    }
     
     /** Checks the board to see if all benefit objects have been collected 
         @param numOfBenefitObjects int 

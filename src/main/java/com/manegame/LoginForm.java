@@ -8,6 +8,7 @@ package com.manegame;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *  This class executes when the player selects login from the New User Form.
@@ -117,8 +118,17 @@ public class LoginForm extends javax.swing.JFrame {
         
         try {
             Player p = ManeDB.dbGetPlayerData(email);
-            new LevelGUI(p).setVisible(true);
-            this.dispose();
+            if (password.equals(p.playerPassword)){
+                new LevelGUI(p).setVisible(true);
+                this.dispose();
+            }
+            else {
+                JOptionPane.showMessageDialog(null,"Password is incorrect");
+                ManeDB.dbFailedLogin(p);
+                txtLoginPassword.setText("");
+                txtLoginPassword.hasFocus();
+            }
+            
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {

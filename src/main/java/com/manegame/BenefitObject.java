@@ -5,6 +5,8 @@
  */
 package com.manegame;
 
+import javax.swing.JLabel;
+
 /**
  * This class holds methods to control actions of objects that benefit the 
  * player.
@@ -21,40 +23,55 @@ public class BenefitObject extends Graphic {
         @param BENEFITOBJECT
         @return String
         */
-        public String benefitObjectImage(int BENEFITOBJECT) { 
+        public JLabel benefitObjectImage(int BENEFITOBJECT) { 
         
-        String benefitImage = "label.setIcon(new ImageIcon(new ImageIcon(\"icon.png\").getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));";
+        String path = "";
         
-        /*
-        switch (BENEFITOBJECT) {
-            case 0: benefitImage = ""; //Haircut image;
-		break;
-            case 1: benefitImage = "";// Foil image;
-		break;
-            case 2: benefitImage = "";// Blowdryer image;
-		break;
-        }
-        */
+        switch (BENEFITOBJECT){
+            case 0:
+                path = "D:\\Sam\\Pictures\\Mane Game\\HAIRCUT.jpg";
+                break;
+            case 1:
+                path = "D:\\Sam\\Pictures\\Mane Game\\HAIRFOIL.jpg";
+                break;
+            case 2:
+                path = "D:\\Sam\\Pictures\\Mane Game\\BLOW_DRYER.jpg";
+                break;
+        }       
         
-        return benefitImage;
+        return Graphic.getGraphicImage(path);
     }
+        
+        
+    
         /** Determines how much player's score increases based on object that 
          * was struck.
         @param BENEFITOBJECT
         @return int
         */
-    public int hitBenefitObject(int BENEFITOBJECT) {
+    public static int hitBenefitObject(int benefitObjectIndexLocation) {
         int benefitAmount = 0;
-        /*
-        switch (BENEFITOBJECT){
-            case 0: benefitAmount = 15;
+        int benefitID = 0;
+        
+        if (benefitObjectIndexLocation % 3 == 0){
+            benefitID = 0;
+        }
+        else if (benefitObjectIndexLocation % 2 == 0){
+            benefitID = 1;
+        }
+        else {
+            benefitID = 2;
+        }
+        
+        switch (benefitID){
+            case 0: benefitAmount = 25; // Foil
 		break;
-            case 1: benefitAmount = 25;
+            case 1: benefitAmount = 5; // Blow Dryer
 		break;
-            case 2: benefitAmount = 5;
+            case 2: benefitAmount = 15; // Haircut
 		break;
         }
-        */
+        
         return benefitAmount; 
     }
     
