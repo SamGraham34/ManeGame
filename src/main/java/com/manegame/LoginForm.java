@@ -115,20 +115,24 @@ public class LoginForm extends javax.swing.JFrame {
     private void btnUserLoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUserLoginActionPerformed
         email = txtLoginEmail.getText();
         password = txtLoginPassword.getText();
+        Player p = new Player();
         
         try {
-            Player p = ManeDB.dbGetPlayerData(email);
-            if (password.equals(p.playerPassword)){
-                new LevelGUI(p).setVisible(true);
-                this.dispose();
+            if (ManeDB.dbVerifyLoginEmail(email) == true) {
+                p = ManeDB.dbGetPlayerData(email);
+                
+                if (password.equals(p.playerPassword)){
+                    new LevelGUI(p).setVisible(true);
+                    this.dispose();
+                }
+                 else {
+                    JOptionPane.showMessageDialog(null,"Password is incorrect");
+                    ManeDB.dbFailedLogin(p);
+                    txtLoginPassword.setText("");
+                    txtLoginPassword.hasFocus();
+                }
             }
-            else {
-                JOptionPane.showMessageDialog(null,"Password is incorrect");
-                ManeDB.dbFailedLogin(p);
-                txtLoginPassword.setText("");
-                txtLoginPassword.hasFocus();
-            }
-            
+  
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {

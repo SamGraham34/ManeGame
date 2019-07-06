@@ -152,23 +152,38 @@ public class ManeDB {
     }
     
     /** Saves a player’s status.  Saves score and level to All Players Table  and creates an end log event. */
-    public static void dbSaveCurrentStatus(Player p, long score, int Level) throws ClassNotFoundException {
-	dbConnect();
+    public static void dbSaveCurrentStatus(Player p, int level, long score) throws ClassNotFoundException, SQLException {
+	Connection connection = dbConnect();
+        //Statement stmt = connection.createStatement();
+        String table = "All_Players_Table";
+
+            String updatePlayerTable = "UPDATE " + table + " SET Player_Level = ? , Player_Score = ? "     
+                    + "WHERE Player_ID = " + Integer.toString(p.playerID);
+                try (PreparedStatement pst = connection.prepareStatement(updatePlayerTable)) {
+                pst.setInt(1, level); 
+                pst.setLong(2,score);
+                              
+                pst.execute();
+                pst.close();
+            }
       //  dbLogEndEvent(p); 
     }
     
-    public static Player dbVerifyLoginEmail(String email) throws ClassNotFoundException {
-	Player player = new Player();
-        dbConnect();
-        if (true){
-                //email in All_Players_Table) {
-		//Select * From All_Players_Table Where input email = player’s email; 
-		//player = result;
+    public static boolean dbVerifyLoginEmail(String email) throws ClassNotFoundException, SQLException {
+	boolean result = false;
+        Connection connection = dbConnect();
+        Statement stmt = connection.createStatement();
+        ResultSet playerInfo = stmt.executeQuery("SELECT Player_Email FROM "
+                    + "All_Players_Table");
+        for (int row = 0; row < dbGetNumOfRowsInTable("All_Players_Table"); row++){
+            playerInfo.next();  
+
+            if (playerInfo.getString("Player_Email").equals(email)){
+                result = true;
             }
-	else{
-		//player fields null;
         }
-        return player;
+
+        return result;
     } 
     
 
@@ -190,6 +205,11 @@ public class ManeDB {
         //code to view log table
     }
     
+    /**
+     * Updates a player's log table with a failed login attempt if password does
+     * not match the player's stored password.
+     * @param p 
+     */
     public static void dbFailedLogin(Player p) {  
         String logTableNameAsString = String.format("Player_%d_Log_Table", p.playerID);
         int logRow = dbGetNumOfRowsInTable(logTableNameAsString);
@@ -202,12 +222,11 @@ public class ManeDB {
                     " WHERE RowID = " + Integer.toString(logRow));
             int priorFailedAttempts = priorAttempts.getInt("FailedLoginAttempts");
             
-            String updateFailedLogin = "UPDATE " + logTableNameAsString + " SET FailedLoginAttempts = ? , "     
+            String updateFailedLogin = "UPDATE " + logTableNameAsString + " SET FailedLoginAttempts = ? "     
                     + "WHERE RowID = " + Integer.toString(logRow);
             
             try (PreparedStatement pst = connection.prepareStatement(updateFailedLogin)) {
-                pst.setInt(1, priorFailedAttempts + 1); 
-                              
+                pst.setInt(1, priorFailedAttempts + 1);            
                 pst.execute();
                 pst.close();
             }
@@ -215,7 +234,6 @@ public class ManeDB {
         }
                 catch ( Exception e ) {
          System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-         JOptionPane.showMessageDialog(null,"Problem in maneDB failed login");
          System.exit(0);
       }   
             
@@ -234,7 +252,7 @@ public class ManeDB {
                 
             Connection connection = dbConnect();
             Statement stmt = connection.createStatement();
-           // String logTableNameAsString = String.format("Player_%d_Log_Table", playerNum);
+           
             String query = "INSERT INTO " + logTableNameAsString + " (RowID,LastLogin,"
                     + "FailedLoginAttempts,LastGamePlayTime,TotalGamePlayTime)"       
                     + "VALUES (?,?,?,?,?)" ;

@@ -6,7 +6,6 @@
 package com.manegame;
 
 import java.awt.BorderLayout;
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -14,30 +13,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.Timer;
-import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
-import javax.swing.AbstractAction;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.KeyStroke;
 import org.apache.maven.shared.utils.StringUtils;
 
 /**
  *  This class opens a new JFrame as the game interface for the user.
  * @author Sam
  */
-public class LevelGUI extends javax.swing.JFrame implements KeyListener {
+public class LevelGUI extends javax.swing.JFrame {
    
     private Timer timer;
+    private Timer sleeper;
     DeductionObject taxCollector;
     DeductionObject stateInspector;
     DeductionObject landLord;
@@ -50,13 +43,14 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
     public static int MIN_Y_AXIS = 25;
     public static int MAX_X_AXIS = 480;
     public static int MIN_X_AXIS = 50;
-    int MIN_DIST_TO_BENEFIT = 18;
+    int MIN_DIST_TO_ICON = 25;
     int SPACE_BETWEEN_BENEFIT_OBJECTS = 60;
-    public JLabel playerIcon;
+    public static JLabel playerIcon;
     long playerScore;
-    int playerSpeed = 6;
+    int playerSpeed;
     Instant start = Instant.now();
     Player player;
+    
     
 
     /**
@@ -66,6 +60,8 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
     public LevelGUI (Player p){
         
         player = p;
+        playerSpeed = 6;
+        
         addPlayerIcon();
         addDeductIcons();
         addBenefitIcons();
@@ -77,7 +73,7 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
         lblLevel.setText(Integer.toString(p.playerLevel));
         playerScore = p.playerScore;
         lblScore.setText(Long.toString(playerScore)); 
-        //addKeyListener(this);       
+        
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -94,9 +90,12 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
                 + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
                 try {
                      ManeDB.dbLogEndEvent(player, gameTimeString);
+                     ManeDB.dbSaveCurrentStatus(player, player.playerLevel, playerScore);
                 } catch (ClassNotFoundException ex) {
                     Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
                     JOptionPane.showMessageDialog(null,"Failed to log");
+                } catch (SQLException ex) {
+                    Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         });
@@ -192,32 +191,42 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-        //this.addKeyListener(direction);
 
-        timer = new Timer(1, new ActionListener(){
+        timer = new Timer(5, new ActionListener(){
             
             @Override
             public void actionPerformed(ActionEvent e){
                 
-                playerIcon.hasFocus();
-                
                 for (JLabel d : deductObjects){ 
-                    Graphic.objectMove(d);                
+                    if (playerIcon.getLocation().x > d.getLocation().x - MIN_DIST_TO_ICON &&
+                            playerIcon.getLocation().x < (d.getLocation().x + MIN_DIST_TO_ICON) &&
+                            playerIcon.getLocation().y > (d.getLocation().y - MIN_DIST_TO_ICON) && 
+                            playerIcon.getLocation().y < (d.getLocation().y + MIN_DIST_TO_ICON) &&
+                            d.isShowing() == true){
+                                d.setVisible(false);
+                                deductIconSleeper(d);
+                                playerScore -= DeductionObject.hitDeductionObject(deductObjects.indexOf(d));
+                                if (playerScore < 0) {
+                                    playerScore = 0;
+                                    playerSpeed = 3;
+                                }
+                    }
+                    Graphic.objectMove(d);                     
                 } 
                
                 for (JLabel b : benefitObjects){
                     int benefitAmount = 0;
-                    if ((playerIcon.getLocation().x > (b.getLocation().x - MIN_DIST_TO_BENEFIT) &&
-                            playerIcon.getLocation().x < (b.getLocation().x + MIN_DIST_TO_BENEFIT)) &&
-                            (playerIcon.getLocation().y > (b.getLocation().y - MIN_DIST_TO_BENEFIT) && 
-                            playerIcon.getLocation().y < (b.getLocation().y + MIN_DIST_TO_BENEFIT)) &&
+                    if ((playerIcon.getLocation().x > (b.getLocation().x - MIN_DIST_TO_ICON) &&
+                            playerIcon.getLocation().x < (b.getLocation().x + MIN_DIST_TO_ICON)) &&
+                            (playerIcon.getLocation().y > (b.getLocation().y - MIN_DIST_TO_ICON) && 
+                            playerIcon.getLocation().y < (b.getLocation().y + MIN_DIST_TO_ICON)) &&
                             b.isShowing() == true){
                         benefitAmount = BenefitObject.hitBenefitObject(benefitObjects.indexOf(b));
                         playerScore += benefitAmount;
-                        lblScore.setText(Long.toString(playerScore));
                         b.setVisible(false);
                         --numOfBenefitObjects;
                     }
+                    lblScore.setText(Long.toString(playerScore));
                 }
             }                           
         });
@@ -226,16 +235,24 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
 
     private void playerDirectionChange(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playerDirectionChange
         if( (evt.getKeyCode() == KeyEvent.VK_DOWN) && (playerIcon.getLocation().y <= MAX_Y_AXIS) ){
-                   playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y + playerSpeed);
+            if (Graphic.hitBottomBarrier(playerIcon) == false) {
+                playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y + playerSpeed);
+            }
         }   
         if( (evt.getKeyCode() == KeyEvent.VK_UP) && (playerIcon.getLocation().y >= MIN_Y_AXIS) ){
+            if (Graphic.hitTopBarrier(playerIcon) == false){
                    playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y - playerSpeed);
+            }
         }
         if( (evt.getKeyCode() == KeyEvent.VK_LEFT) && (playerIcon.getLocation().x >= MIN_X_AXIS) ){
+            if (Graphic.hitLeftBarrier(playerIcon) == false){
                    playerIcon.setLocation(playerIcon.getLocation().x - playerSpeed, playerIcon.getLocation().y);
+            }
         }
         if( (evt.getKeyCode() == KeyEvent.VK_RIGHT) && (playerIcon.getLocation().x <= MAX_X_AXIS) ){
+            if (Graphic.hitRightBarrier(playerIcon) == false){
                    playerIcon.setLocation(playerIcon.getLocation().x + playerSpeed, playerIcon.getLocation().y);
+            }
         }
     }//GEN-LAST:event_playerDirectionChange
 
@@ -319,40 +336,33 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
     public final void addPlayerIcon(){
          
         playerIcon = PlayerIcon.playerIconImage();
-        
         add(playerIcon, BorderLayout.CENTER);
         playerIcon.setLocation(MIN_X_AXIS, MIN_Y_AXIS);
         playerIcon.setVisible(true);  
     }
     
     public final void addVerticalBarrierIcons(){
-        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         int barrierWidth = 15;
         int barrierHeight = 100;
         int j = 0;
-        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         
         for ( int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS; barrierXaxis < MAX_X_AXIS; barrierXaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
-          //  int j = 0;
-            //JLabel barrier = new JLabel();
+
             if (barrierXaxis % (SPACE_BETWEEN_BENEFIT_OBJECTS*2) == 0){
                 barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
                 barrierObjects.get(j).setLocation(barrierXaxis + 27, MIN_Y_AXIS);
                 barrierObjects.get(j).setVisible(true);
                 j++;
                 barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
                 barrierObjects.get(j).setLocation(barrierXaxis + 27, MAX_Y_AXIS - barrierHeight);
                 barrierObjects.get(j).setVisible(true);
                 j++;
             }
-            else {// (barrierXaxis % SPACE_BETWEEN_BENEFIT_OBJECTS == 0){
+            else {
 
                 barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
                 barrierObjects.get(j).setLocation(barrierXaxis + 27, (MAX_Y_AXIS/2) - (barrierHeight/2) + MIN_Y_AXIS);
                 barrierObjects.get(j).setVisible(true);      
@@ -363,37 +373,30 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
         
     }
         public final void addHorizontalBarrierIcons(){
-        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         int barrierWidth = 50;
         int barrierHeight = 15;
         int j = 0;
-        //int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS;
         
-        for ( int barrierYaxis = SPACE_BETWEEN_BENEFIT_OBJECTS; barrierYaxis < MAX_Y_AXIS; barrierYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
-          //  int j = 0;
-            //JLabel barrier = new JLabel();
-            if (barrierYaxis % (SPACE_BETWEEN_BENEFIT_OBJECTS*2) == 0){
+        for ( int barrierYaxis = 200; barrierYaxis < MAX_Y_AXIS; barrierYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
+
+            if (barrierYaxis % (200) == 0){
                 barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(MIN_X_AXIS, barrierYaxis);
-                
+                barrierObjects.get(j).setLocation(100, barrierYaxis);              
                 barrierObjects.get(j).setVisible(true);
                 j++;
+                
                 barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
                 barrierObjects.get(j).setLocation(MAX_X_AXIS - barrierWidth, barrierYaxis);
                 barrierObjects.get(j).setVisible(true);
                 j++;
             }
-            else {// (barrierXaxis % SPACE_BETWEEN_BENEFIT_OBJECTS == 0){
-
+            else {
                 barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-              // barrierObjects.get(j).setBounds(250, 250, barrierWidth, barrierHeight);
                 add(barrierObjects.get(j), BorderLayout.CENTER);
                 barrierObjects.get(j).setLocation((MAX_X_AXIS/2) - (barrierWidth/2) + MIN_X_AXIS, barrierYaxis);
-                barrierObjects.get(j).setVisible(true);      
+                barrierObjects.get(j).setVisible(true);  
                 j++;
             }
             
@@ -433,6 +436,20 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
             }
         }  
     }
+    
+    private void deductIconSleeper(JLabel d){
+       
+        sleeper = new Timer(5000, new ActionListener(){
+       // ActionListener iconSleeper = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+            d.setVisible(true);
+            playerSpeed = 6;
+            }
+        });
+        sleeper.restart();
+
+    }
         
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -448,18 +465,4 @@ public class LevelGUI extends javax.swing.JFrame implements KeyListener {
     private javax.swing.JLabel lblTitleScore;
     // End of variables declaration//GEN-END:variables
 
-    @Override
-    public void keyTyped(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void keyPressed(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void keyReleased(KeyEvent e) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 }

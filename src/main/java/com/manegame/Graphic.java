@@ -21,9 +21,12 @@ public class Graphic extends javax.swing.JLabel {
 
     static int GRAPHIC_HEIGHT = 30; //Height of all graphic icons
     static int GRAPHIC_WIDTH = 30; // width of all graphic icons
+    static int OFFSET = 5; // strange offset for graphic barriers
     static int object_0_Direction = 0;
     static int object_1_Direction = 1;
     static int object_2_Direction = 2;
+    
+    
     
     /** Creates a JLabel with image icon fitted to the size of the label for each
      * graphic.
@@ -48,7 +51,7 @@ public class Graphic extends javax.swing.JLabel {
         public static JLabel getVerticalBarrier(String path) {
         
         JLabel verticalBarrier = new Graphic();
-        verticalBarrier.setBounds(250, 250, 15, 100);
+        verticalBarrier.setBounds(250, 250, 16, 100);
         ImageIcon graphicImage = new ImageIcon(path);
         Image img = graphicImage.getImage();
         Image newImg = img.getScaledInstance(verticalBarrier.getWidth(), 
@@ -81,9 +84,9 @@ public class Graphic extends javax.swing.JLabel {
         int yAxis = d.getLocation().y;
         int objectReference = LevelGUI.deductObjects.indexOf(d);
        
-        switch (objectReference) {
-            case 0:
-                //int direction = 0;
+       switch (objectReference) {
+          case 0:
+                int direction = 0;
                 switch (object_0_Direction) {
                     
                     case 0:
@@ -185,9 +188,7 @@ public class Graphic extends javax.swing.JLabel {
                         break;
                    }
                 break;
-
             }
-        
         }
     
     
@@ -237,7 +238,7 @@ public class Graphic extends javax.swing.JLabel {
         }
         
         for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
+               if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight() + OFFSET){
                    if (movingObjectXaxis >= b.getLocation().x - GRAPHIC_WIDTH && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
                        topBarrierHit = true;
                        break;
@@ -258,8 +259,8 @@ public class Graphic extends javax.swing.JLabel {
             leftBarrierHit = false;
         }
         for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
-                   if (movingObjectXaxis >= b.getLocation().x && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
+               if (movingObjectYaxis >= b.getLocation().y - Graphic.GRAPHIC_HEIGHT && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
+                   if (movingObjectXaxis >= b.getLocation().x && movingObjectXaxis <= b.getLocation().x + b.getWidth() + OFFSET) {
                        leftBarrierHit = true;
                        break;
                    }
@@ -277,7 +278,7 @@ public class Graphic extends javax.swing.JLabel {
             bottomBarrierHit = false;
         }
         for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y - GRAPHIC_HEIGHT && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
+               if (movingObjectYaxis >= b.getLocation().y - (GRAPHIC_HEIGHT + OFFSET) && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
                    if (movingObjectXaxis >= b.getLocation().x - GRAPHIC_WIDTH && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
                        bottomBarrierHit = true;
                        break;
@@ -299,7 +300,7 @@ public class Graphic extends javax.swing.JLabel {
         for (JLabel b : LevelGUI.barrierObjects) {
             
                if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
-                   if (movingObjectXaxis >= b.getLocation().x - GRAPHIC_WIDTH && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
+                   if (movingObjectXaxis >= b.getLocation().x - (GRAPHIC_WIDTH + OFFSET) && movingObjectXaxis <= b.getLocation().x - b.getWidth()) {
                        rightBarrierHit = true;
                    }
                }

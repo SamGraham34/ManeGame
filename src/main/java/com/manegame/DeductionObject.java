@@ -7,9 +7,12 @@ package com.manegame;
 
 import java.awt.Image;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 
 /**
@@ -49,8 +52,8 @@ public class DeductionObject extends Graphic {
     /** Temporarily decrease the player’s speed by the amount returned.
      @param DEDUCTIONOBJECT
      @return double*/
-    public double playerSpeedDecreaseAmount(int DEDUCTIONOBJECT) {
-        double decreaseSpeedBy = 0.0;
+    public int playerSpeedDecreaseAmount(int DEDUCTIONOBJECT) {
+        int decreaseSpeedBy = 2;
         //returns a value to minus player’s speed by.
         return decreaseSpeedBy;
     }
@@ -61,6 +64,7 @@ public class DeductionObject extends Graphic {
      */
     public double playerSpeedDecreaseTime(int DEDUCTIONOBJECT, DeductionObject d) {
         double slowedTime = 0.0;
+        //Thread.sleep(5000);
         //returns a value of time to slow the player
         return slowedTime;
     }
@@ -70,42 +74,32 @@ public class DeductionObject extends Graphic {
         @param DEDUCTIONOBJECT
         @return int
         */
-    public int hitDeductionObject(int DEDUCTIONOBJECT) {
-        int amountToReduceScore = 0;
-        //returns a value to reduce player’s score by
-        return amountToReduceScore;
-    }
-    
-    /** Each deduction object starts in a different direction; this method determines the direction  
-        of each deduction object at the start of the level. 
-        @param DEDUCTIONOBJECT
-     * @param d
-        
-        */
-    /*
-    public static int deductionObjectStartDirection(int DEDUCTIONOBJECT, int x, int y) { 
-        
-        switch (DEDUCTIONOBJECT){
+    public static int hitDeductionObject(int ref) {
+        int value = 0;
+        switch (ref){
             case 0:
-                Graphic.moveDown(y);
+                value = 25;
                 break;
             case 1:
-                Graphic.moveLeft(x);
+                value = 50;
                 break;
-            case 2:
-                Graphic.moveRight(x);
-                break;
-        }
-        
-        return y;
-        
-           
-    } */
+            default:
+                value = 100;     
+        } 
+        //returns a value to reduce player’s score by
+        return value;
+    }
+    
+
 
     /** After a player strikes an object, the deduction object is out of play for 5 seconds. 
      @param DEDUCTIONOBJECT
      */
-    public void hideDeductionObject(int DEDUCTIONOBJECT) {
+    public static void hideDeductionObject(JLabel d) throws InterruptedException {
+        d.setVisible(false);
+        Thread.sleep(5000);
+        d.setVisible(true);
+        
         //set image label visible = false for 5 seconds
     }
     
