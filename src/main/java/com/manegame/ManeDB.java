@@ -46,7 +46,7 @@ public class ManeDB {
      */
         public static Player dbGetPlayerData(String email) throws ClassNotFoundException, SQLException {
         //throw new UnsupportedOperationException("Not supported yet."); 
-        //To change body of generated methods, choose Tools | Templates.
+        
                   
             Connection connection = dbConnect();
             Statement stmt = connection.createStatement();
@@ -88,8 +88,7 @@ public class ManeDB {
                 pst.execute();
                 JOptionPane.showMessageDialog(null,"Player Added!");
                 pst.close();
-                
-                //dbGetPlayerData();
+
                 connection.close();
             }            
         }
@@ -119,7 +118,6 @@ public class ManeDB {
                         " TotalGamePlayTime              STRING    NOT NULL)"); 
             stmt.executeUpdate(sql);         
             stmt.close();
-            JOptionPane.showMessageDialog(null,"Player Log Created!");
             connection.close();
             
 
@@ -130,7 +128,11 @@ public class ManeDB {
       }    
             
    }
-    
+    /**
+     * Returns the number of rows in the given table.
+     * @param table
+     * @return 
+     */
     public static int dbGetNumOfRowsInTable(String table){
         int numOfRows = 0;
         try{
@@ -151,10 +153,17 @@ public class ManeDB {
         return numOfRows;
     }
     
-    /** Saves a player’s status.  Saves score and level to All Players Table  and creates an end log event. */
+    /** 
+     * Saves a player’s score and level to All Players Table.
+     * @param p
+     * @param level
+     * @param score
+     * @throws ClassNotFoundException
+     * @throws SQLException 
+     */
+     
     public static void dbSaveCurrentStatus(Player p, int level, long score) throws ClassNotFoundException, SQLException {
 	Connection connection = dbConnect();
-        //Statement stmt = connection.createStatement();
         String table = "All_Players_Table";
 
             String updatePlayerTable = "UPDATE " + table + " SET Player_Level = ? , Player_Score = ? "     
@@ -165,10 +174,16 @@ public class ManeDB {
                               
                 pst.execute();
                 pst.close();
-            }
-      //  dbLogEndEvent(p); 
+            } 
     }
     
+    /**
+     * Verifies a player's email is in the All Player's Table.
+     * @param email
+     * @return
+     * @throws ClassNotFoundException
+     * @throws SQLException 
+     */
     public static boolean dbVerifyLoginEmail(String email) throws ClassNotFoundException, SQLException {
 	boolean result = false;
         Connection connection = dbConnect();
@@ -180,6 +195,7 @@ public class ManeDB {
 
             if (playerInfo.getString("Player_Email").equals(email)){
                 result = true;
+                break;
             }
         }
 
@@ -210,10 +226,9 @@ public class ManeDB {
      * not match the player's stored password.
      * @param p 
      */
-    public static void dbFailedLogin(Player p) {  
+    public static void dbFailedLogin(Player p) throws ClassNotFoundException, SQLException {  
         String logTableNameAsString = String.format("Player_%d_Log_Table", p.playerID);
         int logRow = dbGetNumOfRowsInTable(logTableNameAsString);
-        try {
                 
             Connection connection = dbConnect();
             Statement stmt = connection.createStatement();
@@ -232,23 +247,18 @@ public class ManeDB {
             }
             connection.close(); 
         }
-                catch ( Exception e ) {
-         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-         System.exit(0);
-      }   
-            
-        //code to view log table
-    }
+      
     
     /** Updates the player’s log table LastLogin field with Date/Time.Now */
-    public static void dbLogBeginEvent(int playerNum) throws ClassNotFoundException {
-        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z");
+    public static void dbLogBeginEvent(int playerNum) throws ClassNotFoundException, SQLException {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); // format the time for log table
         Date date = new Date(System.currentTimeMillis());
-        String logTableNameAsString = String.format("Player_%d_Log_Table", playerNum);
-        int lastLog = dbGetNumOfRowsInTable(logTableNameAsString);
+        
+        String logTableNameAsString = String.format("Player_%d_Log_Table", playerNum); 
+        int lastLog = dbGetNumOfRowsInTable(logTableNameAsString); // get row count
         String previousTotalTime = "00:00:00";
-        int failedLoginAttempts = 0;
-        try {
+        int failedLoginAttempts = 0; // 
+        
                 
             Connection connection = dbConnect();
             Statement stmt = connection.createStatement();
@@ -275,15 +285,11 @@ public class ManeDB {
                 pst.close();
             }
             connection.close();                
-        }               
-        catch ( Exception e ) {
-         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-         System.exit(0);
-      }        
+                              
     } 
     
     /** Update LastGamePlay field of log table with (Current time – LastLoginTime) sums Total Game Play.*/
-    public static void dbLogEndEvent(Player p, String gameTime) throws ClassNotFoundException {
+    public static void dbLogEndEvent(Player p, String gameTime) throws ClassNotFoundException, SQLException {
 
         
         String[] gameTimeArray = gameTime.split(":");
@@ -292,20 +298,17 @@ public class ManeDB {
         int seconds = 0;
         String logTableNameAsString = String.format("Player_%d_Log_Table", p.playerID);
         int lastLog = dbGetNumOfRowsInTable(logTableNameAsString);
-        try {
-                
+       
             Connection connection = dbConnect();
             Statement stmt = connection.createStatement();
 
             ResultSet getTotalTime = stmt.executeQuery("SELECT TotalGamePlayTime FROM " + logTableNameAsString + 
-                    " WHERE RowID = " + Integer.toString(lastLog));
-            //JOptionPane.showMessageDialog(null,getTotalTime.getString("TotalGamePlayTime"));
-            
-            
-            String[] totalTimeArray = getTotalTime.getString("TotalGamePlayTime").split(":");
+                    " WHERE RowID = " + Integer.toString(lastLog));        
+
+            String[] totalTimeArray = getTotalTime.getString("TotalGamePlayTime").split(":"); // split up string to work with.
    
             hours = Integer.parseInt(gameTimeArray[0]) 
-                + Integer.parseInt(totalTimeArray[0]) ;
+                + Integer.parseInt(totalTimeArray[0]) ; 
                 
             minutes = Integer.parseInt(gameTimeArray[1]) 
                 + Integer.parseInt(totalTimeArray[1]) ;
@@ -325,9 +328,7 @@ public class ManeDB {
             String totalToLog = Integer.toString(hours) + ":" 
                 + StringUtils.leftPad(Integer.toString(minutes), 2, "0") + ":" 
                 + StringUtils.leftPad(Integer.toString(seconds), 2, "0");
-            
-            JOptionPane.showMessageDialog(null,totalToLog);
-            
+                        
             String updateQuery = "UPDATE " + logTableNameAsString + " SET LastGamePlayTime = ? , "
                     + "TotalGamePlayTime = ? "      
                     + "WHERE RowID = " + Integer.toString(lastLog);
@@ -340,13 +341,7 @@ public class ManeDB {
                 pst.close();
             }
             connection.close();    
-
-        }               
-        catch ( Exception e ) {
-         System.err.println( e.getClass().getName() + ": " + e.getMessage() );
-         JOptionPane.showMessageDialog(null,"problem in ManeDB end log method \n you are trying to update row " + Integer.toString(lastLog));
-         System.exit(0);
-      }    
+   
         
          
     } 

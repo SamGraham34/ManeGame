@@ -14,32 +14,27 @@ import javax.swing.JLabel;
  */
 public class BenefitObject extends Graphic {
         
-        /**
-         * Enum of available Benefit objects.
-         */
-        public enum BENEFITOBJECT {HAIRCUT, FOIL, BLOW_DRY};
         
         /** Displays a benefit object image based on the object reference
         @param BENEFITOBJECT
         @return String
         */
-        public JLabel benefitObjectImage(int BENEFITOBJECT) { 
         
-        String path = "";
+        public void benefitIconImage(BenefitObject b, int ref) { 
         
-        switch (BENEFITOBJECT){
+        switch (ref){
             case 0:
-                path = "D:\\Sam\\Pictures\\Mane Game\\HAIRCUT.jpg";
+                b.imagePath = "D:\\Sam\\Pictures\\Mane Game\\HAIRCUT.jpg";
                 break;
             case 1:
-                path = "D:\\Sam\\Pictures\\Mane Game\\HAIRFOIL.jpg";
+                b.imagePath = "D:\\Sam\\Pictures\\Mane Game\\HAIRFOIL.jpg";
                 break;
             case 2:
-                path = "D:\\Sam\\Pictures\\Mane Game\\BLOW_DRYER.jpg";
+                b.imagePath = "D:\\Sam\\Pictures\\Mane Game\\BLOW_DRYER.jpg";
                 break;
         }       
         
-        return Graphic.getGraphicImage(path);
+        b.setIconImage(b);
     }
         
         
@@ -49,7 +44,7 @@ public class BenefitObject extends Graphic {
         @param BENEFITOBJECT
         @return int
         */
-    public static int hitBenefitObject(int benefitObjectIndexLocation) {
+    public int hitBenefitObject(int benefitObjectIndexLocation) {
         int benefitAmount = 0;
         int benefitID = 0;
         
@@ -73,13 +68,5 @@ public class BenefitObject extends Graphic {
         }
         
         return benefitAmount; 
-    }
-    
-    /** A benefit object that has been collected is taken out of play 
-     @param BENEFITOBJECT
-     */
-    public void removeBenefitObject(int BENEFITOBJECT) {
-        //remove BENEFITOBJECT;
-    }
-    
+    }    
 }

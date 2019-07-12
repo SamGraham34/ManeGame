@@ -12,7 +12,6 @@ package com.manegame;
  * @author Sam
  */
 public class Player {
-    //int playerIdentification = 1;
     
     int playerID;
     String playerName;

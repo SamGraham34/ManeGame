@@ -30,14 +30,14 @@ public class Level {
     
       
     
-    public static JLabel getBarrier() {
+   /* public static JLabel getBarrier() {
          
         String path = "D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg";
-        return Graphic.getGraphicImage(path);
+       // return Graphic.getGraphicImage(path);
 
         
         
-    }
+    }*/
 
     
     /** Checks the board to see if all benefit objects have been collected 

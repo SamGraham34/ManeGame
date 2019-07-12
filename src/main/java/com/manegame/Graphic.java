@@ -22,10 +22,20 @@ public class Graphic extends javax.swing.JLabel {
     static int GRAPHIC_HEIGHT = 30; //Height of all graphic icons
     static int GRAPHIC_WIDTH = 30; // width of all graphic icons
     static int OFFSET = 5; // strange offset for graphic barriers
-    static int object_0_Direction = 0;
-    static int object_1_Direction = 1;
-    static int object_2_Direction = 2;
     
+    protected String imagePath;
+    JLabel label = new JLabel();
+    int speed = 2;
+        
+    int object_0_Direction = 0;
+    int object_1_Direction = 1;
+    int object_2_Direction = 2;
+    
+    public Graphic (){
+        
+        String imagePath;
+        label = new JLabel();        
+    }
     
     
     /** Creates a JLabel with image icon fitted to the size of the label for each
@@ -33,87 +43,59 @@ public class Graphic extends javax.swing.JLabel {
      * @param path
      * @return JLabel
      */
-    public static JLabel getGraphicImage(String path) {
-        
-        JLabel graphic = new Graphic();
-        graphic.setBounds(250, 250, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
-        ImageIcon graphicImage = new ImageIcon(path);
+    protected void setIconImage(Graphic g) {
+    
+        g.label.setBounds(250, 250, GRAPHIC_WIDTH, GRAPHIC_HEIGHT);
+        ImageIcon graphicImage = new ImageIcon(g.imagePath);
         Image img = graphicImage.getImage();
-        Image newImg = img.getScaledInstance(graphic.getWidth(), 
-                graphic.getHeight(), Image.SCALE_SMOOTH);
+        Image newImg = img.getScaledInstance(g.label.getWidth(), 
+                g.label.getHeight(), Image.SCALE_SMOOTH);
         ImageIcon image = new ImageIcon(newImg);
-        graphic.setIcon(image);
-        
-        return graphic;
-        
+        g.label.setIcon(image);     
     }
     
-        public static JLabel getVerticalBarrier(String path) {
-        
-        JLabel verticalBarrier = new Graphic();
-        verticalBarrier.setBounds(250, 250, 16, 100);
-        ImageIcon graphicImage = new ImageIcon(path);
-        Image img = graphicImage.getImage();
-        Image newImg = img.getScaledInstance(verticalBarrier.getWidth(), 
-                verticalBarrier.getHeight(), Image.SCALE_SMOOTH);
-        ImageIcon image = new ImageIcon(newImg);
-        verticalBarrier.setIcon(image);
-        verticalBarrier.setOpaque(false);
-        
-        return verticalBarrier;
-    }
-        
-    public static JLabel getHorizontalBarrier(String path) {
-        
-        JLabel horizontalBarrier = new Graphic();
-        horizontalBarrier.setBounds(250, 250, 100, 15);
-        ImageIcon graphicImage = new ImageIcon(path);
-        Image img = graphicImage.getImage();
-        Image newImg = img.getScaledInstance(horizontalBarrier.getWidth(), 
-                horizontalBarrier.getHeight(), Image.SCALE_SMOOTH);
-        ImageIcon image = new ImageIcon(newImg);
-        horizontalBarrier.setIcon(image);
-        horizontalBarrier.setOpaque(false);
-        
-        return horizontalBarrier;
-    }
-    
-    public static void objectMove(JLabel d) {
+    /**
+     * Objects move based on the object reference.  The current direction for each
+     * deduction object is stored in a class variable.
+     * @param d
+     * @param ref 
+     */
+    public void objectMove(Graphic d, int ref) {
         Random randomDirection = new Random();
-        int xAxis = d.getLocation().x;
-        int yAxis = d.getLocation().y;
-        int objectReference = LevelGUI.deductObjects.indexOf(d);
+        int xAxis = d.label.getLocation().x;
+        int yAxis = d.label.getLocation().y;
+        //int objectReference = LevelGUI.deductObjects.indexOf(d);
        
-       switch (objectReference) {
+       switch (ref) {
           case 0:
-                int direction = 0;
+                
                 switch (object_0_Direction) {
                     
                     case 0:
                         moveUp(d);
                         if (hitTopBarrier(d) == true) {
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_0_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 1:
                         moveLeft(d);
                         if (hitLeftBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_0_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 2:        
                         moveDown(d);
                         if (hitBottomBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_0_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 3:
                         moveRight(d);
                         if (hitRightBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_0_Direction = randomDirection.nextInt(4);
                         }
                         break;
@@ -128,28 +110,28 @@ public class Graphic extends javax.swing.JLabel {
                     case 0:
                         moveUp(d);
                         if (hitTopBarrier(d) == true) {
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_1_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 1:
                         moveLeft(d);
                         if (hitLeftBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_1_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 2:        
                         moveDown(d);
                         if (hitBottomBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_1_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 3:
                         moveRight(d);
                         if (hitRightBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_1_Direction = randomDirection.nextInt(4);
                         }
                         break;
@@ -161,28 +143,28 @@ public class Graphic extends javax.swing.JLabel {
                     case 0:
                         moveUp(d);
                         if (hitTopBarrier(d) == true) {
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_2_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 1:
                         moveLeft(d);
                         if (hitLeftBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_2_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 2:        
                         moveDown(d);
                         if (hitBottomBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_2_Direction = randomDirection.nextInt(4);
                         }
                         break;
                     case 3:
                         moveRight(d);
                         if (hitRightBarrier(d) == true){
-                            d.setLocation(xAxis, yAxis);
+                            d.label.setLocation(xAxis, yAxis);
                             object_2_Direction = randomDirection.nextInt(4);
                         }
                         break;
@@ -192,75 +174,81 @@ public class Graphic extends javax.swing.JLabel {
         }
     
     
-    /** Object in motion moves up.  This method to be called 
-     * recursively until an event (barrier or player input) 
-     * occurs 
-     * @param yAxis
-     * @return yAxis
+    /** Object in moves up.  
+     * @param d (Graphic)
      */
-    public static void moveUp(JLabel d) { 
-           d.setLocation(d.getLocation().x, d.getLocation().y -1);
+    protected void moveUp(Graphic d) { 
+           d.label.setLocation(d.label.getLocation().x, d.label.getLocation().y - d.speed);
     }
     
     /** Object moves down. A recursive method until another method changes the direction 
-     @param g (Graphic)
+     @param d (Graphic)
      */
-    public static void moveDown(JLabel d) {
-            d.setLocation(d.getLocation().x, d.getLocation().y + 1);      
+    protected void moveDown(Graphic d) {
+            d.label.setLocation(d.label.getLocation().x, d.label.getLocation().y + d.speed);      
     }
     
     /** Object moves left. Recursive method until direction changed by another method 
-     @param g (Graphic)
+     @param d (Graphic)
      */
-    public static void moveLeft(JLabel d) {
-            d.setLocation(d.getLocation().x - 1, d.getLocation().y); 
+    protected void moveLeft(Graphic d) {
+            d.label.setLocation(d.label.getLocation().x - d.speed, d.label.getLocation().y); 
     }
     
     /** Object moves right. Recursive method until direction changed by another method 
-     @param g (Graphic)
+     @param d (Graphic)
      */
-    public static void moveRight(JLabel d) {
-            d.setLocation(d.getLocation().x + 1, d.getLocation().y);
+    protected void moveRight(Graphic d) {
+            d.label.setLocation(d.label.getLocation().x + d.speed, d.label.getLocation().y);
     }
     
-    /** Any graphic that runs into a barrier will turn 90 degrees to the left until there is no barrier 
-     @param g (Graphic)
-     */
+
     
-    
-    public static boolean hitTopBarrier(JLabel d) {  
+   /**
+    * Checks if an object hits the bottom of a barrier.
+    * @param d
+    * @return 
+    */ 
+    public boolean hitTopBarrier(Graphic d) {  
         boolean topBarrierHit = true;
-        int movingObjectXaxis = d.getLocation().x;
-        int movingObjectYaxis = d.getLocation().y;
+        int movingObjectXaxis = d.label.getLocation().x;
+        int movingObjectYaxis = d.label.getLocation().y;
         if (movingObjectYaxis > LevelGUI.MIN_Y_AXIS) {
 
             topBarrierHit = false;
         }
         
-        for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight() + OFFSET){
-                   if (movingObjectXaxis >= b.getLocation().x - GRAPHIC_WIDTH && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
+        for (BarrierObject b : LevelGUI.barrierIcons) {
+               if (movingObjectYaxis >= b.label.getLocation().y && 
+                       movingObjectYaxis <= b.label.getLocation().y + b.label.getHeight() + OFFSET){
+                   if (movingObjectXaxis >= b.label.getLocation().x - GRAPHIC_WIDTH && 
+                           movingObjectXaxis <= b.label.getLocation().x + b.label.getWidth()) {
                        topBarrierHit = true;
                        break;
                    }
                }
         }
-        
-        
         return topBarrierHit;
     }
     
-    public static boolean hitLeftBarrier(JLabel d) {  
+    /**
+     * Checks if an object hit a barrier on the left side of the barrier.
+     * @param d
+     * @return 
+     */
+    public boolean hitLeftBarrier(Graphic d) {  
         boolean leftBarrierHit = true;
-        int movingObjectXaxis = d.getLocation().x;
-        int movingObjectYaxis = d.getLocation().y;
+        int movingObjectXaxis = d.label.getLocation().x;
+        int movingObjectYaxis = d.label.getLocation().y;
         
         if (movingObjectXaxis > LevelGUI.MIN_X_AXIS) {
             leftBarrierHit = false;
         }
-        for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y - Graphic.GRAPHIC_HEIGHT && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
-                   if (movingObjectXaxis >= b.getLocation().x && movingObjectXaxis <= b.getLocation().x + b.getWidth() + OFFSET) {
+        for (BarrierObject b : LevelGUI.barrierIcons) {
+               if (movingObjectYaxis >= b.label.getLocation().y - d.GRAPHIC_HEIGHT && 
+                       movingObjectYaxis <= b.label.getLocation().y + b.label.getHeight()){
+                   if (movingObjectXaxis >= b.label.getLocation().x && 
+                           movingObjectXaxis <= b.label.getLocation().x + b.label.getWidth() + OFFSET) {
                        leftBarrierHit = true;
                        break;
                    }
@@ -269,17 +257,24 @@ public class Graphic extends javax.swing.JLabel {
         return leftBarrierHit;
     }
     
-        public static boolean hitBottomBarrier(JLabel d) {  
+    /**
+     * Checks if an object hit the top of a barrier.
+     * @param d
+     * @return 
+     */
+        public boolean hitBottomBarrier(Graphic d) {  
         boolean bottomBarrierHit = true;
-        int movingObjectXaxis = d.getLocation().x;
-        int movingObjectYaxis = d.getLocation().y;
+        int movingObjectXaxis = d.label.getLocation().x;
+        int movingObjectYaxis = d.label.getLocation().y;
 
         if (movingObjectYaxis < LevelGUI.MAX_Y_AXIS) {
             bottomBarrierHit = false;
         }
-        for (JLabel b : LevelGUI.barrierObjects) {
-               if (movingObjectYaxis >= b.getLocation().y - (GRAPHIC_HEIGHT + OFFSET) && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
-                   if (movingObjectXaxis >= b.getLocation().x - GRAPHIC_WIDTH && movingObjectXaxis <= b.getLocation().x + b.getWidth()) {
+        for (BarrierObject b : LevelGUI.barrierIcons) {
+               if (movingObjectYaxis >= b.label.getLocation().y - (GRAPHIC_HEIGHT + OFFSET) && 
+                       movingObjectYaxis <= b.label.getLocation().y + b.label.getHeight()){
+                   if (movingObjectXaxis >= b.label.getLocation().x - GRAPHIC_WIDTH && 
+                           movingObjectXaxis <= b.label.getLocation().x + b.label.getWidth()) {
                        bottomBarrierHit = true;
                        break;
                    }
@@ -287,26 +282,31 @@ public class Graphic extends javax.swing.JLabel {
         }        
         return bottomBarrierHit;
     }
-        
-    public static boolean hitRightBarrier(JLabel d) {  
+    
+    /**
+     * Checks if an object hit a barrier on the right side of the barrier.
+     * @param d
+     * @return 
+     */
+    public boolean hitRightBarrier(Graphic d) {  
         boolean rightBarrierHit = true;
-        int movingObjectXaxis = d.getLocation().x;
-        int movingObjectYaxis = d.getLocation().y;
+        int movingObjectXaxis = d.label.getLocation().x;
+        int movingObjectYaxis = d.label.getLocation().y;
 
         if (movingObjectXaxis < LevelGUI.MAX_X_AXIS) {
             rightBarrierHit = false;
         }
                 
-        for (JLabel b : LevelGUI.barrierObjects) {
+        for (BarrierObject b : LevelGUI.barrierIcons) {
             
-               if (movingObjectYaxis >= b.getLocation().y && movingObjectYaxis <= b.getLocation().y + b.getHeight()){
-                   if (movingObjectXaxis >= b.getLocation().x - (GRAPHIC_WIDTH + OFFSET) && movingObjectXaxis <= b.getLocation().x - b.getWidth()) {
+               if (movingObjectYaxis >= b.label.getLocation().y - GRAPHIC_HEIGHT && 
+                       movingObjectYaxis <= b.label.getLocation().y + b.label.getHeight()){
+                   if (movingObjectXaxis >= b.label.getLocation().x - (GRAPHIC_WIDTH + OFFSET) && 
+                           movingObjectXaxis <= b.label.getLocation().x - b.label.getWidth()) {
                        rightBarrierHit = true;
                    }
                }
-            
-        }   
-        
+        }      
         return rightBarrierHit;
     }
 }

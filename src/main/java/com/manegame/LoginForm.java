@@ -132,11 +132,20 @@ public class LoginForm extends javax.swing.JFrame {
                     txtLoginPassword.hasFocus();
                 }
             }
+            else {
+                JOptionPane.showMessageDialog(null,"Email not in database."); 
+                txtLoginEmail.setText("");
+                txtLoginEmail.hasFocus();
+            }
+           
   
         } catch (ClassNotFoundException ex) {
             Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Unable to connect to database at this time");
+            
         } catch (SQLException ex) {
             Logger.getLogger(LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Having difficulty, come back later");
         }
     }//GEN-LAST:event_btnUserLoginActionPerformed
 

@@ -6,27 +6,90 @@
 package com.manegame;
 
 import static java.awt.Frame.ICONIFIED;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import static java.awt.event.KeyEvent.*;
 import java.awt.event.KeyListener;
+import java.util.Random;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
 
 /**
  *  This class controls the user's icon Graphic on the player's board.
  * @author Sam
  */
-public abstract class PlayerIcon extends Graphic implements KeyListener {
+public class PlayerIcon extends Graphic {//implements KeyListener {
     
+
+    int hitDeduct = 0;
+    int playerDirection;
+    Timer playerTimer;
     
-    public static JLabel playerIconImage() { 
+    public void setPlayerImage(PlayerIcon p) { 
         
-        String path = "D:\\Sam\\Pictures\\Mane Game\\PLAYER_ICON.jpg";
-        
-        return Graphic.getGraphicImage(path);
+        p.imagePath = "D:\\Sam\\Pictures\\Mane Game\\PLAYER_ICON.jpg";
+        p.setIconImage(p);
     }
+    
+    public void playerMove(PlayerIcon p) {
+        Random randomDirection = new Random();
+        int xAxis = p.label.getLocation().x;
+        int yAxis = p.label.getLocation().y;
+        
+        switch (p.playerDirection) {
+                    
+                    case 0:
+                        p.moveUp(p);
+                        if (p.hitTopBarrier(p) == true) {
+                            p.label.setLocation(xAxis, yAxis);
+                            playerDirection = 1;
+                        }
+                        break;
+                    case 1:
+                        p.moveLeft(p);
+                        if (p.hitLeftBarrier(p) == true){
+                            p.label.setLocation(xAxis, yAxis);
+                            playerDirection = 2;
+                        }
+                        break;
+                    case 2:        
+                        p.moveDown(p);
+                        if (p.hitBottomBarrier(p) == true){
+                            p.label.setLocation(xAxis, yAxis);
+                            playerDirection = 3;
+                        }
+                        break;
+                    case 3:
+                        p.moveRight(p);
+                        if (p.hitRightBarrier(p) == true){
+                            p.label.setLocation(xAxis, yAxis);
+                            playerDirection = 0;
+                        }
+                        break;
+                    }
+    }
+    
+    public void slowPlayer(PlayerIcon p){
+        if (p.hitDeduct > 0){
+            p.playerTimer.stop(); // stop previous timer
+        }
+        else{
+            p.playerTimer = new Timer(3000, new ActionListener(){ // initialize timer
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    p.speed = 2; //resume normal speed 
+                    
+                }
+            });      
+            p.hitDeduct++;
+        }
+        p.playerTimer.start(); // start the timer
+      }
+    
     
     /** This method allows the player to interact with the player icon.  Directional arrows will 
         control the player’s movements. 

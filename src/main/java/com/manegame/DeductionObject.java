@@ -6,6 +6,8 @@
 package com.manegame;
 
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,6 +15,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.Timer;
 
 
 /**
@@ -22,31 +25,35 @@ import javax.swing.JOptionPane;
  */
 public class DeductionObject extends Graphic {
     
+    Timer sleeper;
+    int priorHit = 0;
+    
     /**
      * Enum of Deduction objects.
      */
-    public enum DEDUCTIONOBJECT {LANDLORD, TAX_COLLECTOR, STATE_INSPECTOR};
+    //public enum DEDUCTIONOBJECT {LANDLORD, TAX_COLLECTOR, STATE_INSPECTOR};
 
      /** Displays a deduction object image based on the object reference
       * @param DEDUCTIONOBJECT
       * @param g
       */
-    public JLabel deductionObjectImage(int DEDUCTIONOBJECT) {        
-        String path = "";
+    
+        public void setIconImage(DeductionObject d, int ref) {        
         
-        switch (DEDUCTIONOBJECT){
+        
+        switch (ref){
             case 0:
-                path = "D:\\Sam\\Pictures\\Mane Game\\LANDLORD.jpg";
+                d.imagePath = "D:\\Sam\\Pictures\\Mane Game\\LANDLORD.jpg";
                 break;
             case 1:
-                path = "D:\\Sam\\Pictures\\Mane Game\\TAX_COLLECTOR.jpg";
+                d.imagePath = "D:\\Sam\\Pictures\\Mane Game\\TAX_COLLECTOR.jpg";
                 break;
             case 2:
-                path = "D:\\Sam\\Pictures\\Mane Game\\STATE_INSPECTOR.jpg";
+                d.imagePath = "D:\\Sam\\Pictures\\Mane Game\\STATE_INSPECTOR.jpg";
                 break;
         }       
         
-        return Graphic.getGraphicImage(path);
+        d.setIconImage(d);
     }
 
     /** Temporarily decrease the player’s speed by the amount returned.
@@ -74,7 +81,7 @@ public class DeductionObject extends Graphic {
         @param DEDUCTIONOBJECT
         @return int
         */
-    public static int hitDeductionObject(int ref) {
+    public int hitDeductionObject(int ref) {
         int value = 0;
         switch (ref){
             case 0:
@@ -93,15 +100,26 @@ public class DeductionObject extends Graphic {
 
 
     /** After a player strikes an object, the deduction object is out of play for 5 seconds. 
-     @param DEDUCTIONOBJECT
+     @param d DeductionObject
      */
-    public static void hideDeductionObject(JLabel d) throws InterruptedException {
-        d.setVisible(false);
-        Thread.sleep(5000);
-        d.setVisible(true);
+    public void hideDeductionObject(DeductionObject d) {
         
-        //set image label visible = false for 5 seconds
+        if (d.priorHit > 0){
+            d.sleeper.stop(); // stop previous timer
+        }
+        else{
+            d.sleeper = new Timer(5000, new ActionListener(){ // initialize timer
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    d.label.setVisible(true); //icon back on board  
+                    
+                }
+            });      
+            d.priorHit++;
+        }
+        d.sleeper.start(); // start the timer
     }
+    
     
     /** Deduction object changes to a random direction.  Direction may be changed to the current direction.  
         It’s random.

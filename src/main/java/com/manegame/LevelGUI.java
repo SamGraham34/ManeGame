@@ -29,15 +29,11 @@ import org.apache.maven.shared.utils.StringUtils;
  */
 public class LevelGUI extends javax.swing.JFrame {
    
+    PlayerIcon playerIcon;
     private Timer timer;
-    private Timer sleeper;
-    DeductionObject taxCollector;
-    DeductionObject stateInspector;
-    DeductionObject landLord;
-    public static List<JLabel> deductObjects = new ArrayList<>();
-    List<JLabel> benefitObjects = new ArrayList<>();
-    public static List<JLabel> barrierObjects = new ArrayList<>();
-    int numOfBarriers = 8;
+    List<DeductionObject> deductIcons = new ArrayList<>();
+    List<BenefitObject> benefitIcons = new ArrayList<>();
+    public static List<BarrierObject> barrierIcons = new ArrayList<>();
     int numOfBenefitObjects = 72;
     public static int MAX_Y_AXIS = 506;
     public static int MIN_Y_AXIS = 25;
@@ -45,13 +41,10 @@ public class LevelGUI extends javax.swing.JFrame {
     public static int MIN_X_AXIS = 50;
     int MIN_DIST_TO_ICON = 25;
     int SPACE_BETWEEN_BENEFIT_OBJECTS = 60;
-    public static JLabel playerIcon;
     long playerScore;
-    int playerSpeed;
     Instant start = Instant.now();
     Player player;
-    
-    
+
 
     /**
      * Creates new form LevelGUI
@@ -60,12 +53,10 @@ public class LevelGUI extends javax.swing.JFrame {
     public LevelGUI (Player p){
         
         player = p;
-        playerSpeed = 6;
-        
+
         addPlayerIcon();
         addDeductIcons();
-        addBenefitIcons();
-        //addHorizontalBarrierIcons();
+        addBenefitIcon();
         addVerticalBarrierIcons();
         
         initComponents();
@@ -77,26 +68,7 @@ public class LevelGUI extends javax.swing.JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                Instant finish = Instant.now();
-                Duration gameTime = Duration.between(start, finish);
-                long gameInSeconds = gameTime.getSeconds();
-                JOptionPane.showMessageDialog(null,Long.toString(gameInSeconds));
-                long gameInMinutes = gameInSeconds /  60;
-                JOptionPane.showMessageDialog(null,Long.toString(gameInMinutes));
-                long gameInHours = gameInMinutes / 60;
-                // HH:MM:SS
-                String gameTimeString = Long.toString(gameInHours) + ":" 
-                + StringUtils.leftPad(Long.toString(gameInMinutes), 2, "0") + ":" 
-                + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
-                try {
-                     ManeDB.dbLogEndEvent(player, gameTimeString);
-                     ManeDB.dbSaveCurrentStatus(player, player.playerLevel, playerScore);
-                } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
-                    JOptionPane.showMessageDialog(null,"Failed to log");
-                } catch (SQLException ex) {
-                    Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                close();
             }
         });
 
@@ -106,8 +78,12 @@ public class LevelGUI extends javax.swing.JFrame {
             Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
             JOptionPane.showMessageDialog(null,"Failed to connect to "
                     + "database your game is not being logged.");
+        } catch (SQLException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Connected database, but failed to log");
         }    
     }
+    
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -134,11 +110,6 @@ public class LevelGUI extends javax.swing.JFrame {
         setPreferredSize(new java.awt.Dimension(570, 650));
         setResizable(false);
         setSize(new java.awt.Dimension(570, 650));
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosed(java.awt.event.WindowEvent evt) {
-                Close_Event(evt);
-            }
-        });
         getContentPane().setLayout(null);
 
         lblPlayerName.setText("Player's Name");
@@ -191,42 +162,55 @@ public class LevelGUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartActionPerformed
-
-        timer = new Timer(5, new ActionListener(){
+        
+        playerIcon.playerDirection = 0;
+        timer = new Timer(10, new ActionListener(){ // every 5 milliseconds action repeats
             
             @Override
             public void actionPerformed(ActionEvent e){
                 
-                for (JLabel d : deductObjects){ 
-                    if (playerIcon.getLocation().x > d.getLocation().x - MIN_DIST_TO_ICON &&
-                            playerIcon.getLocation().x < (d.getLocation().x + MIN_DIST_TO_ICON) &&
-                            playerIcon.getLocation().y > (d.getLocation().y - MIN_DIST_TO_ICON) && 
-                            playerIcon.getLocation().y < (d.getLocation().y + MIN_DIST_TO_ICON) &&
-                            d.isShowing() == true){
-                                d.setVisible(false);
-                                deductIconSleeper(d);
-                                playerScore -= DeductionObject.hitDeductionObject(deductObjects.indexOf(d));
+                playerIcon.playerMove(playerIcon);
+                
+                for (DeductionObject d : deductIcons){ // loop to see if player hit deduct icon
+                    if (playerIcon.label.getLocation().x > d.label.getLocation().x - MIN_DIST_TO_ICON &&
+                            playerIcon.label.getLocation().x < (d.label.getLocation().x + MIN_DIST_TO_ICON) &&
+                            playerIcon.label.getLocation().y > (d.label.getLocation().y - MIN_DIST_TO_ICON) && 
+                            playerIcon.label.getLocation().y < (d.label.getLocation().y + MIN_DIST_TO_ICON) &&
+                            d.label.isShowing() == true){
+                        
+                            d.label.setVisible(false);
+                            d.hideDeductionObject(d);
+                        
+                            playerIcon.speed = 1;
+                            playerIcon.slowPlayer(playerIcon);
+                            playerScore -= d.hitDeductionObject(deductIcons.indexOf(d));
                                 if (playerScore < 0) {
                                     playerScore = 0;
-                                    playerSpeed = 3;
+                                    
                                 }
                     }
-                    Graphic.objectMove(d);                     
+                    d.objectMove(d, deductIcons.indexOf(d));                     
                 } 
                
-                for (JLabel b : benefitObjects){
+                for (BenefitObject b : benefitIcons){
                     int benefitAmount = 0;
-                    if ((playerIcon.getLocation().x > (b.getLocation().x - MIN_DIST_TO_ICON) &&
-                            playerIcon.getLocation().x < (b.getLocation().x + MIN_DIST_TO_ICON)) &&
-                            (playerIcon.getLocation().y > (b.getLocation().y - MIN_DIST_TO_ICON) && 
-                            playerIcon.getLocation().y < (b.getLocation().y + MIN_DIST_TO_ICON)) &&
-                            b.isShowing() == true){
-                        benefitAmount = BenefitObject.hitBenefitObject(benefitObjects.indexOf(b));
+                    if ((playerIcon.label.getLocation().x > (b.label.getLocation().x - MIN_DIST_TO_ICON) && 
+                            playerIcon.label.getLocation().x < (b.label.getLocation().x + MIN_DIST_TO_ICON)) &&
+                            (playerIcon.label.getLocation().y > (b.label.getLocation().y - MIN_DIST_TO_ICON) && 
+                            playerIcon.label.getLocation().y < (b.label.getLocation().y + MIN_DIST_TO_ICON)) &&
+                            b.label.isShowing() == true){
+                        benefitAmount = b.hitBenefitObject(benefitIcons.indexOf(b));
                         playerScore += benefitAmount;
-                        b.setVisible(false);
+                        b.label.setVisible(false);
                         --numOfBenefitObjects;
                     }
                     lblScore.setText(Long.toString(playerScore));
+                    if (numOfBenefitObjects == 0) {
+                       timer.stop();
+                       endOfLevel();
+                       break;
+                       
+                    }
                 }
             }                           
         });
@@ -234,45 +218,27 @@ public class LevelGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStartActionPerformed
 
     private void playerDirectionChange(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_playerDirectionChange
-        if( (evt.getKeyCode() == KeyEvent.VK_DOWN) && (playerIcon.getLocation().y <= MAX_Y_AXIS) ){
-            if (Graphic.hitBottomBarrier(playerIcon) == false) {
-                playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y + playerSpeed);
+        if( (evt.getKeyCode() == KeyEvent.VK_DOWN) && (playerIcon.label.getLocation().y <= MAX_Y_AXIS) ){
+            if (playerIcon.hitBottomBarrier(playerIcon) == false) {
+                playerIcon.playerDirection = 2;
             }
         }   
-        if( (evt.getKeyCode() == KeyEvent.VK_UP) && (playerIcon.getLocation().y >= MIN_Y_AXIS) ){
-            if (Graphic.hitTopBarrier(playerIcon) == false){
-                   playerIcon.setLocation(playerIcon.getLocation().x, playerIcon.getLocation().y - playerSpeed);
+        if( (evt.getKeyCode() == KeyEvent.VK_UP) && (playerIcon.label.getLocation().y >= MIN_Y_AXIS) ){
+            if (playerIcon.hitTopBarrier(playerIcon) == false){
+                   playerIcon.playerDirection = 0;
             }
         }
-        if( (evt.getKeyCode() == KeyEvent.VK_LEFT) && (playerIcon.getLocation().x >= MIN_X_AXIS) ){
-            if (Graphic.hitLeftBarrier(playerIcon) == false){
-                   playerIcon.setLocation(playerIcon.getLocation().x - playerSpeed, playerIcon.getLocation().y);
+        if( (evt.getKeyCode() == KeyEvent.VK_LEFT) && (playerIcon.label.getLocation().x >= MIN_X_AXIS) ){
+            if (playerIcon.hitLeftBarrier(playerIcon) == false){
+                  playerIcon.playerDirection = 1;
             }
         }
-        if( (evt.getKeyCode() == KeyEvent.VK_RIGHT) && (playerIcon.getLocation().x <= MAX_X_AXIS) ){
-            if (Graphic.hitRightBarrier(playerIcon) == false){
-                   playerIcon.setLocation(playerIcon.getLocation().x + playerSpeed, playerIcon.getLocation().y);
+        if( (evt.getKeyCode() == KeyEvent.VK_RIGHT) && (playerIcon.label.getLocation().x <= MAX_X_AXIS) ){
+            if (playerIcon.hitRightBarrier(playerIcon) == false){
+                  playerIcon.playerDirection = 3;
             }
         }
     }//GEN-LAST:event_playerDirectionChange
-
-    private void Close_Event(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_Close_Event
-        Instant finish = Instant.now();
-        Duration gameTime = Duration.between(start, finish);
-        long gameInSeconds = gameTime.getSeconds();
-        long gameInMinutes = gameInSeconds /  60;
-        long gameInHours = gameInMinutes / 60;
-        // HH:MM:SS
-        String gameTimeString = Long.toString(gameInHours) + ":" 
-                + StringUtils.leftPad(Long.toString(gameInMinutes % 60), 2, "0") + ":" 
-                + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
-        try {
-            ManeDB.dbLogEndEvent(player, gameTimeString);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }//GEN-LAST:event_Close_Event
 
     /**
      * @param p the command line arguments
@@ -311,23 +277,13 @@ public class LevelGUI extends javax.swing.JFrame {
     
     public final void addDeductIcons(){
        
-        landLord = new DeductionObject();        
-        JLabel landLord0 = landLord.deductionObjectImage(0);
-        deductObjects.add(landLord0);
-        add(landLord0, BorderLayout.CENTER);
-        landLord0.setVisible(true);      
-        
-        taxCollector = new DeductionObject();
-        JLabel taxCollector1 = taxCollector.deductionObjectImage(1);
-        deductObjects.add(taxCollector1);
-        add(taxCollector1, BorderLayout.CENTER);
-        taxCollector1.setVisible(true);
-        
-        stateInspector = new DeductionObject();
-        JLabel stateInspector2 = stateInspector.deductionObjectImage(2);
-        deductObjects.add(stateInspector2);
-        add(stateInspector2, BorderLayout.CENTER);
-        stateInspector2.setVisible(true);                      
+        for (int i = 0; i < 3; i++) {
+        DeductionObject d = new DeductionObject();        
+        deductIcons.add(d);
+        d.setIconImage(d, i);
+        add(d.label, BorderLayout.CENTER);
+        d.label.setVisible(true);     
+        }
     }
        
     /**
@@ -335,76 +291,86 @@ public class LevelGUI extends javax.swing.JFrame {
      */
     public final void addPlayerIcon(){
          
-        playerIcon = PlayerIcon.playerIconImage();
-        add(playerIcon, BorderLayout.CENTER);
-        playerIcon.setLocation(MIN_X_AXIS, MIN_Y_AXIS);
-        playerIcon.setVisible(true);  
+        playerIcon = new PlayerIcon();
+        playerIcon.setPlayerImage(playerIcon);
+        add(playerIcon.label, BorderLayout.CENTER);
+        playerIcon.label.setLocation(MIN_X_AXIS, MIN_Y_AXIS);
+        playerIcon.label.setVisible(true);  
     }
     
+    /**
+     * Adds vertical barriers to the board spaced between benefit objects.
+     * 
+     */
     public final void addVerticalBarrierIcons(){
         int barrierWidth = 15;
         int barrierHeight = 100;
         int j = 0;
         
         for ( int barrierXaxis = SPACE_BETWEEN_BENEFIT_OBJECTS; barrierXaxis < MAX_X_AXIS; barrierXaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
-
+           
             if (barrierXaxis % (SPACE_BETWEEN_BENEFIT_OBJECTS*2) == 0){
-                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(barrierXaxis + 27, MIN_Y_AXIS);
-                barrierObjects.get(j).setVisible(true);
-                j++;
-                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(barrierXaxis + 27, MAX_Y_AXIS - barrierHeight);
-                barrierObjects.get(j).setVisible(true);
-                j++;
-            }
-            else {
-
-                barrierObjects.add(Graphic.getVerticalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(barrierXaxis + 27, (MAX_Y_AXIS/2) - (barrierHeight/2) + MIN_Y_AXIS);
-                barrierObjects.get(j).setVisible(true);      
-                j++;
-            }
-            
-        }
-        
-    }
-        public final void addHorizontalBarrierIcons(){
-        int barrierWidth = 50;
-        int barrierHeight = 15;
-        int j = 0;
-        
-        for ( int barrierYaxis = 200; barrierYaxis < MAX_Y_AXIS; barrierYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS ) {
-
-            if (barrierYaxis % (200) == 0){
-                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(100, barrierYaxis);              
-                barrierObjects.get(j).setVisible(true);
+                barrierIcons.add(new BarrierObject());
+                barrierIcons.get(j).verticalBarrier();
+                add(barrierIcons.get(j).label, BorderLayout.CENTER);
+                barrierIcons.get(j).label.setLocation(barrierXaxis + 27, MIN_Y_AXIS);
+                barrierIcons.get(j).label.setVisible(true);
                 j++;
                 
-                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation(MAX_X_AXIS - barrierWidth, barrierYaxis);
-                barrierObjects.get(j).setVisible(true);
+                barrierIcons.add(new BarrierObject());
+                barrierIcons.get(j).verticalBarrier();
+                add(barrierIcons.get(j).label, BorderLayout.CENTER);
+                barrierIcons.get(j).label.setLocation(barrierXaxis + 27, MAX_Y_AXIS - barrierHeight);
+                barrierIcons.get(j).label.setVisible(true);
                 j++;
             }
             else {
-                barrierObjects.add(Graphic.getHorizontalBarrier("D:\\Sam\\Pictures\\Mane Game\\BLUE.jpg"));
-                add(barrierObjects.get(j), BorderLayout.CENTER);
-                barrierObjects.get(j).setLocation((MAX_X_AXIS/2) - (barrierWidth/2) + MIN_X_AXIS, barrierYaxis);
-                barrierObjects.get(j).setVisible(true);  
+
+                barrierIcons.add(new BarrierObject());
+                barrierIcons.get(j).verticalBarrier();
+                add(barrierIcons.get(j).label, BorderLayout.CENTER);
+                barrierIcons.get(j).label.setLocation(barrierXaxis + 27, (MAX_Y_AXIS/2) - (barrierHeight/2) + MIN_Y_AXIS);
+                barrierIcons.get(j).label.setVisible(true);      
                 j++;
             }
             
         }
         
     }
- 
-    public final void addBenefitIcons(){
+    
+    
+    /**
+     * Close events save player's info to All Player's table and to their log table.
+     * 
+     */
+    private void close() {
+            
+        Instant finish = Instant.now();
+        Duration gameTime = Duration.between(start, finish);
+        long gameInSeconds = gameTime.getSeconds();
+        long gameInMinutes = gameInSeconds /  60;
+        long gameInHours = gameInMinutes / 60;
+            // HH:MM:SS
+        String gameTimeString = Long.toString(gameInHours) + ":" 
+            + StringUtils.leftPad(Long.toString(gameInMinutes), 2, "0") + ":" 
+            + StringUtils.leftPad(Long.toString(gameInSeconds % 60), 2, "0");
+        try {
+            ManeDB.dbLogEndEvent(player, gameTimeString);
+            ManeDB.dbSaveCurrentStatus(player, player.playerLevel, playerScore);
+            
+            this.dispose();
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(null,"Failed to log");
+        } catch (SQLException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Add benefit icons to the board.
+     */
+    public final void addBenefitIcon(){
         int benefitObjectXaxis = MIN_X_AXIS;
         int benefitObjectYaxis = MIN_Y_AXIS;
         
@@ -412,21 +378,24 @@ public class LevelGUI extends javax.swing.JFrame {
         // add JLabel for each object.
         for (int i = 0; i < numOfBenefitObjects; i++) {
             if (benefitObjectYaxis < MAX_Y_AXIS) {
-                BenefitObject benefitIcon = new BenefitObject();        
+                BenefitObject b = new BenefitObject();        
                 if (i % 3 == 0){
-                    benefitObjects.add(benefitIcon.benefitObjectImage(1));
+                    benefitIcons.add(b);
+                    b.benefitIconImage(b, 1);
                     }
                 else if (i % 2 == 0){
-                    benefitObjects.add(benefitIcon.benefitObjectImage(2));
+                    benefitIcons.add(b);
+                    b.benefitIconImage(b, 2);
                 }
                 else {
-                    benefitObjects.add(benefitIcon.benefitObjectImage(0));
+                    benefitIcons.add(b);
+                    b.benefitIconImage(b, 0);
                 }
                 // add the new JLabel to the board.
-                add(benefitObjects.get(i), BorderLayout.CENTER);
+                add(b.label, BorderLayout.CENTER);
                 // set the benefit object location.
-                benefitObjects.get(i).setLocation(benefitObjectXaxis, benefitObjectYaxis);
-                benefitObjects.get(i).setVisible(true);  
+                b.label.setLocation(benefitObjectXaxis, benefitObjectYaxis);
+                b.label.setVisible(true);  
                 benefitObjectYaxis += SPACE_BETWEEN_BENEFIT_OBJECTS;
             }
             // start a new column of benefit objects.
@@ -437,19 +406,23 @@ public class LevelGUI extends javax.swing.JFrame {
         }  
     }
     
-    private void deductIconSleeper(JLabel d){
-       
-        sleeper = new Timer(5000, new ActionListener(){
-       // ActionListener iconSleeper = new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-            d.setVisible(true);
-            playerSpeed = 6;
-            }
-        });
-        sleeper.restart();
-
+    private void endOfLevel(){
+        
+        player.playerLevel += 1;
+        close();
+        LevelGUI nextLevel;
+        try {
+            nextLevel = new LevelGUI(ManeDB.dbGetPlayerData(player.playerEmail));
+            nextLevel.setVisible(true);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(LevelGUI.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        this.dispose();
     }
+    
         
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

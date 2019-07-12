@@ -27,11 +27,14 @@ public class NewUserForm extends javax.swing.JFrame {
     String name;
     String email;
     String password;
+    
     /**
      * Creates new form NewUserForm
      */
     public NewUserForm() {
         initComponents();
+        txtPassword.setEchoChar('*');
+        txtVerifyPassword.setEchoChar('*');
     }
 
     /**
@@ -45,7 +48,6 @@ public class NewUserForm extends javax.swing.JFrame {
 
         lblName = new javax.swing.JLabel();
         lblEmail = new javax.swing.JLabel();
-        txtPassword = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
         btnRegister = new javax.swing.JButton();
         btnLogin = new javax.swing.JButton();
@@ -54,21 +56,28 @@ public class NewUserForm extends javax.swing.JFrame {
         lblPassword = new javax.swing.JLabel();
         txtEmail = new javax.swing.JTextField();
         lblVerifyPassword = new javax.swing.JLabel();
-        txtVerifyPassword = new javax.swing.JTextField();
+        txtPassword = new javax.swing.JPasswordField();
+        txtVerifyPassword = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setSize(new java.awt.Dimension(475, 400));
+        getContentPane().setLayout(null);
 
         lblName.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         lblName.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblName.setText("Name:");
+        getContentPane().add(lblName);
+        lblName.setBounds(52, 76, 67, 17);
 
         lblEmail.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         lblEmail.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblEmail.setText("Email:");
-
-        txtPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        getContentPane().add(lblEmail);
+        lblEmail.setBounds(52, 109, 67, 17);
 
         txtName.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        getContentPane().add(txtName);
+        txtName.setBounds(132, 73, 290, 23);
 
         btnRegister.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         btnRegister.setText("Register");
@@ -78,6 +87,8 @@ public class NewUserForm extends javax.swing.JFrame {
                 btnRegisterActionPerformed(evt);
             }
         });
+        getContentPane().add(btnRegister);
+        btnRegister.setBounds(167, 233, 114, 23);
 
         btnLogin.setFont(new java.awt.Font("Times New Roman", 0, 12)); // NOI18N
         btnLogin.setText("Login");
@@ -87,133 +98,82 @@ public class NewUserForm extends javax.swing.JFrame {
                 btnLoginActionPerformed(evt);
             }
         });
+        getContentPane().add(btnLogin);
+        btnLogin.setBounds(167, 289, 114, 23);
 
         lblReturnUser.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         lblReturnUser.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         lblReturnUser.setText("Returning User?");
+        getContentPane().add(lblReturnUser);
+        lblReturnUser.setBounds(167, 262, 114, 17);
 
         lblTitle.setFont(new java.awt.Font("Tahoma", 1, 18)); // NOI18N
         lblTitle.setText("Welcome to the Mane Game");
+        getContentPane().add(lblTitle);
+        lblTitle.setBounds(96, 27, 263, 22);
 
         lblPassword.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         lblPassword.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblPassword.setText("Password:");
+        getContentPane().add(lblPassword);
+        lblPassword.setBounds(50, 140, 70, 17);
 
         txtEmail.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
+        getContentPane().add(txtEmail);
+        txtEmail.setBounds(132, 106, 290, 23);
 
         lblVerifyPassword.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         lblVerifyPassword.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         lblVerifyPassword.setText("Verify Password:");
-
-        txtVerifyPassword.setFont(new java.awt.Font("Times New Roman", 0, 14)); // NOI18N
-
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(96, 96, 96)
-                        .addComponent(lblTitle))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(167, 167, 167)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(lblReturnUser, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnRegister, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnLogin, javax.swing.GroupLayout.PREFERRED_SIZE, 114, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(52, 52, 52)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblName, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, 288, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(lblPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(lblVerifyPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(txtVerifyPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 285, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(0, 31, Short.MAX_VALUE))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGap(27, 27, 27)
-                .addComponent(lblTitle)
-                .addGap(24, 24, 24)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblName)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblEmail)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(lblPassword)
-                    .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(txtVerifyPassword, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(lblVerifyPassword))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 38, Short.MAX_VALUE)
-                .addComponent(btnRegister)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(lblReturnUser)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(btnLogin)
-                .addContainerGap())
-        );
-
-        pack();
-        setLocationRelativeTo(null);
+        getContentPane().add(lblVerifyPassword);
+        lblVerifyPassword.setBounds(10, 180, 112, 17);
+        getContentPane().add(txtPassword);
+        txtPassword.setBounds(130, 140, 290, 23);
+        getContentPane().add(txtVerifyPassword);
+        txtVerifyPassword.setBounds(130, 180, 290, 23);
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnRegisterActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegisterActionPerformed
                    
+        try {
             name = txtName.getText();
             email = txtEmail.getText();
             
-         // Verify password fields match
-        if (txtPassword.getText().equals(txtVerifyPassword.getText())) {
-            password = txtPassword.getText();
-            
-            //check that all input is valid
-            if (validInputName(name) == true && validInputEmail(email) == true && validInputPassword(password) == true) {   
-            Player p = new Player(name, email, password);
-        
-                try {
-                    ManeDB.dbSaveNewPlayer(p);
-                    ManeDB.dbCreatePlayerLogTable(p.playerID);
-                    //Level.loadLevel(p.playerID);
-                    new LevelGUI(p).setVisible(true);
-                } 
-                catch (ClassNotFoundException ex) {
-                    Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
-                }   
-                catch (SQLException ex) {
-                    Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
+            if (ManeDB.dbVerifyLoginEmail(email) == false)    {
+                // Verify password fields match
+                if (txtPassword.getText().equals(txtVerifyPassword.getText())) {
+                    password = txtPassword.getText();
+                    
+                    //check that all input is valid
+                    if (validInputName(name) == true && validInputEmail(email) == true && validInputPassword(password) == true) {
+                        Player p = new Player(name, email, password);
+                        
+                        try {
+                            ManeDB.dbSaveNewPlayer(p);
+                            ManeDB.dbCreatePlayerLogTable(p.playerID);
+                            new LevelGUI(p).setVisible(true);
+                        }
+                        catch (ClassNotFoundException ex) {
+                            Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        catch (SQLException ex) {
+                            Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
                 }
-            } 
-        }
-        else {
-            JOptionPane.showMessageDialog(null,"Passwords must match");
-            txtPassword.hasFocus();
-            txtVerifyPassword.setText("");
-            
-            
+                else { 
+                    JOptionPane.showMessageDialog(null,"Passwords must match");
+                    txtPassword.hasFocus();
+                    txtVerifyPassword.setText("");
+                }
+            }
+            else {
+                JOptionPane.showMessageDialog(null,"You already have an account");
+            }
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(NewUserForm.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_btnRegisterActionPerformed
     
@@ -227,7 +187,7 @@ public class NewUserForm extends javax.swing.JFrame {
         
         if (Pattern.matches("[a-zA-Z0-9\\s\\-]{1,50}", name)){
             inputValid = true;
-            StringUtils.countMatches(name.replace(" ", ""), "--");
+            StringUtils.countMatches(name.replace(" ", ""), "--"); //replace spaces --
         }
         else {
             JOptionPane.showMessageDialog(null,"Name can only contain letters, digits, "
@@ -245,9 +205,17 @@ public class NewUserForm extends javax.swing.JFrame {
      * @return 
      */
     public boolean validInputEmail (String inputEmail) {
-	boolean validEmail = true;
-	//code to check input
-	return validEmail;
+	boolean inputValid = false;
+        String validEmail = "^[\\w-_\\.+]*[\\w-_\\.]\\@([\\w]+\\.)+[\\w]+[\\w]$";
+        if (email.matches(validEmail)){
+            inputValid = true;
+        }    
+        else {
+            JOptionPane.showMessageDialog(null,"Please Enter a Valid Email Address");
+            txtEmail.setText("");
+            txtEmail.hasFocus();
+        }
+        return inputValid;
     }
     
      /**
@@ -256,14 +224,19 @@ public class NewUserForm extends javax.swing.JFrame {
      * @return 
      */
     public boolean validInputPassword (String inputPassword){
-	boolean validPassword = true;
-	//if (inputPassword == inputVerifyPassword) {
-            //code to check input for SQL injection
-       // }           
-	//else {
-            //messagebox.show(“Passwords don’t match”)
-            //textboxPassword.focus;
-      //  }
+	boolean validPassword = false;
+        String passwordChecker = "((?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{6,20})";
+        if (password.matches(passwordChecker)) {
+            validPassword = true;
+        }
+        else {
+            JOptionPane.showMessageDialog(null,"Password must be 6 - 20 characters\n" +
+                    "Must have at least one lower case letter\nAt least one upper case letter\n" +
+                    "And one of the following special characters @, #, $, %");
+            txtPassword.setText("");
+            txtVerifyPassword.setText("");
+            txtPassword.hasFocus();
+        }
 	return validPassword;
     }
     
@@ -326,7 +299,7 @@ public class NewUserForm extends javax.swing.JFrame {
     private javax.swing.JLabel lblVerifyPassword;
     private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtPassword;
-    private javax.swing.JTextField txtVerifyPassword;
+    private javax.swing.JPasswordField txtPassword;
+    private javax.swing.JPasswordField txtVerifyPassword;
     // End of variables declaration//GEN-END:variables
 }
